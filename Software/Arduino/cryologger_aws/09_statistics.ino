@@ -31,9 +31,18 @@ void clearStats()
   temperatureExtStats.clear();
   //solarStats.clear();
   humidityExtStats.clear();
-  windSpeedStats.clear();
-  uStats.clear();
-  vStats.clear();
+  //windSpeedStats.clear();
+  shorwave1Stats.clear()
+  shortwave2Stats.clear()          
+  soilmoist1Stats.clear()             
+  soilmoist2Stats.clear()            
+  MaxbotixStats_av.clear()                   
+  MaxbotixStats_std.clear()                   
+  MaxbotixStats_max.clear()                     
+  MaxbotixStats_min.clear()                    
+  MaxbotixStats_nan.clear() 
+  uStats.clear();   //??
+  vStats.clear();  //??
 }
 
 // Print statistics
@@ -79,7 +88,6 @@ void printStats()
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(solarStats.minimum());            printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(solarStats.maximum());            printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(solarStats.average());
-  */
   DEBUG_PRINT(F("Wind speed"));   printTab(1);
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(windSpeedStats.count());          printTab(1);
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(windSpeedStats.minimum());        printTab(1);
@@ -97,4 +105,25 @@ void printStats()
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(uStats.average());
   DEBUG_PRINT(F("Wind gust speed: "));      printTab(1);  DEBUG_PRINTLN(windGustSpeed);
   DEBUG_PRINT(F("Wind gust direction: "));  printTab(1);  DEBUG_PRINTLN(windGustDirection);
+  */
+  DEBUG_PRINT(F("Short Wave 1"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(shortwave1Stats.count());         printTab(1); 
+  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(shortwave1Stats.minimum());       printTab(1);
+  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(shortwave1Stats.maximum());       printTab(1);
+  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(shortwave1Stats.average());
+  DEBUG_PRINT(F("Short Wave 2"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(shortwave2Stats.count());         printTab(1); 
+  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(shortwave2Stats.minimum());       printTab(1);
+  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(shortwave2Stats.maximum());       printTab(1);
+  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(shortwave2Stats.average());
+  DEBUG_PRINT(F("Soil Moist 1"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(soilmoist1Stats.count());         printTab(1); 
+  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(soilmoist1Stats.minimum());       printTab(1);
+  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(soilmoist1Stats.maximum());       printTab(1);
+  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(soilmoist1Stats.average());
+  DEBUG_PRINT(F("Soil Moist 2"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(soilmoist2Stats.count());         printTab(1); 
+  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(soilmoist2Stats.minimum());       printTab(1);
+  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(soilmoist2Stats.maximum());       printTab(1);
+  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(soilmoist2Stats.average());
 }
