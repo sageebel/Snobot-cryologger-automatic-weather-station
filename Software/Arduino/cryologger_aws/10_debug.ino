@@ -59,6 +59,7 @@ void printTimers()
 }
 
 // Print contents of union/structure storing Mobile Originated (MO) SBD message data
+/*
 void printMoSbd()
 {
   printLine();
@@ -159,3 +160,4 @@ int freeRam()
   char stack_dummy = 0;
   return &stack_dummy - sbrk(0);
 }
+*/

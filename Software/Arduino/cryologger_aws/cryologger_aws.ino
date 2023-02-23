@@ -355,7 +355,7 @@ void setup()
   digitalWrite(PIN_5V_EN, LOW);       // Disable power to Iridium 9603
   digitalWrite(PIN_12V_EN, LOW);      // Disable 12V power
   digitalWrite(PIN_GNSS_EN, HIGH);    // Disable power to GNSS
-  digitalWrite(PIN_MB_sleep,LOW);     // Sleep Maxbotix 
+  // digitalWrite(PIN_MB_sleep,LOW);     // Sleep Maxbotix 
 
   // Configure analog-to-digital (ADC) converter
   configureAdc();

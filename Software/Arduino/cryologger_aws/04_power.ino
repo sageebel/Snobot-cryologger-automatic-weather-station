@@ -16,7 +16,7 @@ void readBattery()
   //voltage = voltage * 3.3 * 2 / 4096.0;
 
   // Write data to union
-  moSbdMessage.voltage = voltage * 100;
+  // moSbdMessage.voltage = voltage * 100;
 
   // Add to statistics object
   batteryStats.add(voltage);
@@ -77,6 +77,7 @@ void disable5V()
 }
 
 // Enable 12 V power
+/*
 void enable12V()
 {
   digitalWrite(PIN_12V_EN, HIGH);
@@ -88,6 +89,7 @@ void disable12V()
 {
   digitalWrite(PIN_12V_EN, LOW);
 }
+*/
 
 // Prepare system for sleep
 void prepareForSleep()
