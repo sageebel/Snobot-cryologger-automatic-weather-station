@@ -234,43 +234,74 @@ void readHmp60()
 }
 
 // ----------------------------------------------------------------------------
-// Apogee SP-212 Pyranometer
+// Apogee SP-212 Pyranometer 
 // -----------------------------------------------------
 // Colour    Pin        Description
 // -----------------------------------------------------
-// White     ?          Positive (signal from sensor)
+// White     A1,A2      Positive (signal from sensor)
 // Red       5V         Input Power 5-24 V DC
 // Black     GND        Ground (from sensor signal and output power)
 // Clear     GND        Shield/Ground
 // ----------------------------------------------------------------------------
-void readSp212()
+//Updward Facing 
+void readSp212_1()
 {
   // Start loop timer
   unsigned long loopStartTime = millis();
 
-  DEBUG_PRINT("Info - Reading SP212...");
+  DEBUG_PRINT("Info - Reading SP212_1...");
 
   // Perform analog readings
-  (void)analogRead(PIN_SOLAR);
-  float sensorValue = analogRead(PIN_SOLAR); // External temperature
+  // (void)analogRead(PIN_SP212_1);
+  float sensorValue = analogRead(PIN_SP212_1); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  solar = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2
+  // shortwave1 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2 //this is not working in testing need to troubleshoot 
 
   // Calculate measured voltages
-  float voltage = sensorValue * (3.3 / 4095.0);
+  float voltage = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
 
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  //DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F(",")); DEBUG_PRINT(sensorValue); DEBUG_PRINT(F(",")); DEBUG_PRINTLN_DEC(solar, 2);
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINT(F("mV,")); 
 
   // Add to statistics object
-  solarStats.add(solar);
+  shortwave1Stats.add(voltage);
 
   // Stop loop timer
-  timer.readSp212 = millis() - loopStartTime;
+  timer.readSp212_1 = millis() - loopStartTime;
 }
+//Downward Facing 
+void readSp212_2()
+{
+  // Start loop timer
+  unsigned long loopStartTime = millis();
+
+  DEBUG_PRINT("Info - Reading SP212_2...");
+
+  // Perform analog readings
+  //(void)analogRead(PIN_SP212_2);
+  float sensorValue = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
+
+  // Map voltages to sensor ranges
+  //shortwave2 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2 //this inst working need to troubleshoot 
+
+  // Calculate measured voltages
+  float voltage = sensorValue * (0.8);
+
+  DEBUG_PRINTLN("done.");
+
+  // Print debug info
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINT(F("mV,")); 
+
+  // Add to statistics object
+  shortwave2Stats.add(voltage);
+
+  // Stop loop timer
+  timer.readSp212_2 = millis() - loopStartTime;
+}
+
 
 // ----------------------------------------------------------------------------
 // R.M. Young Wind Monitor 5103L (4-20 mA)
@@ -476,22 +507,145 @@ void windVectors()
 }
 
 // ----------------------------------------------------------------------------
+// Adafruit Temperature Humidity Sensor (SHT-30) 
+// ------------------------------
+// Colour     Pin     Description
+// ------------------------------
+// Brown/red       3.3V     Power
+// Black           GND      Ground
+// Yellow          SCK      Clock
+// Blue/Green      SDA      Data
+// ----------------------------------------------------------------------------
+// default I2C - 0x44
+//----------------------------------------------------------------------------
+//adapted from previous SHT-31 program 
+
+void readsht30()
+{
+  // Start the loop timer
+  unsigned long loopStartTime = millis();
+
+  DEBUG_PRINT("Info - Reading SHT30...");
+
+  // Disable I2C bus //why are we disabling this before reading the sensor?
+  Wire.end();
+
+  // Add delay
+  myDelay(100);
+
+  // Read sensor
+  temperatureExt = sht.readTemperatureC();
+  humidityExt = sht.readHumidity();
+
+  // Add to statistics object
+  temperatureExtStats.add(temperatureExt);
+  humidityExtStats.add(humidityExt);
+
+  // Print debug info
+  //DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
+  //DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
+
+  // Re-enable I2C bus
+  Wire.begin();
+
+  // Stop the loop timer
+  timer.readsht30 = millis() - loopStartTime;
+}
+
+
+// ----------------------------------------------------------------------------
 // MaxBotix MB7354 HRXL-MaxSonar-WRS5
 // https://www.maxbotix.com/ultrasonic_sensors/mb7354.htm
 // --------------------------------------------------
-// Colour    Pin    Description             Pin
+// Colour    Pin    Description             Notes
 // --------------------------------------------------
-// White    1       Temperature Sensor      Not connected
-// Orange   2       Pulse Width Output      Not connected
-// Brown    3       Analog Voltage Output   Analog In
-// Green    4       Ranging Start/Stop      Not connected
-// Blue     5       Serial Output           Not connected
-// Red      6       Vcc                     5V
-// Black    7       GND                     GND
+// White           Temperature Sensor      Not connected
+// Orange          Pulse Width Output      Not connected
+// Brown    A3     Analog Voltage Output   Analog In
+// Green    7      Ranging Start/Stop      Not connected
+// Blue            Serial Output           Not connected
+// Red      5V     Vcc                     5V
+// Black    GND    GND                     GND
 //
 // ----------------------------------------------------------------------------
 // Read Maxbotix distance to surface
-void readMb7354()
-{
+void readMxBtx() {
+  // Wake sensor
+  digitalWrite(PIN_MB_sleep, HIGH);
+  delay(100);
+  
+  // Create a temporary Statistic array to hold the maxbotix measurements
+  Statistic Maxbotix;
 
+  // Create temporary variables
+  unsigned int z, z_av, z_std, z_max, z_min, z_nan;
+  z = 0;
+  z_av = 0;
+  z_std = 0;
+  z_max = 0;
+  z_min = 0;
+  z_nan = 0;
+  
+  // Get 30 z readings in mm, filtering out reading 50 mm
+  // above/below sensor minumum/maximum readings
+  for(byte i = 0; i < 30; i++) {
+    z = pulseIn(PIN_MB_pw, HIGH); // Read distance to snow surface
+    
+    if (z > 550 && z < 4950) { // Filter readings
+      Maxbotix.add(z); // Add good readings to stats array
+    }
+    else {
+      z_nan += 1; // Count bad readings
+    }
+    delay(100); // Delay 0.1 secs between readings
+  }
+
+  // Get stats from the Maxbotix array in inches
+  z_av = Maxbotix.average()/25.4, 0;
+  z_std = Maxbotix.pop_stdev()/25.4, 0;
+  z_max = Maxbotix.maximum()/25.4, 0;
+  z_min = Maxbotix.minimum()/25.4, 0;
+    
+  // Deal with issue of a maximum long number in the instance of no
+  // readings within filtered range
+  if (z_av > 5000) {
+    z_av = 0;
+  }
+  if (z_std > 5000) {
+    z_std = 0;
+  }
+  if (z_max > 5000) {
+  z_max = 0;
+  }
+  if (z_min > 5000) {
+  z_min = 0;
+  }
+  
+  // Add sample stats to global arrays
+  MaxbotixStats_av.add(z_av);
+  MaxbotixStats_std.add(z_std);
+  MaxbotixStats_max.add(z_max);
+  MaxbotixStats_min.add(z_min);
+  MaxbotixStats_nan.add(z_nan);
+
+  // Add to sample variables
+  distMaxbotix_av  = z_av;
+  distMaxbotix_std = z_std;
+  distMaxbotix_max = z_max;
+  distMaxbotix_min = z_min;
+  distMaxbotix_nan = z_nan;
+
+  // Clear local array
+  Maxbotix.clear();
+
+  // Print debug info
+  DEBUG_PRINT(F("Distance: ")); DEBUG_PRINT_DEC(z_av, 4); DEBUG_PRINT(F("in,")); DEBUG_PRINT(z_nan); DEBUG_PRINTLN(F(","));
+
+
+  
+  // Sleep sensor
+  digitalWrite(PIN_MB_sleep, LOW);
+  delay(100);
+  
 }
+

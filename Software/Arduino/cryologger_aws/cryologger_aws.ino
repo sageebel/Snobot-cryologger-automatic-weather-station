@@ -1,31 +1,35 @@
 /*
-    Title:    Cryologger Automatic Weather Station
-    Date:     February 19, 2023
-    Author:   Adam Garbo
-    Version:  0.4
+    Title:                Snobots 
+    Date:                 March 16, 2023
+    Author:               Adam Garbo 
+    Modifications By:     Sage Ebel 
+    Version:              0.1.a
+   
 
     Description:
-    - Code configured for automatic weather stations to be deployed in Igloolik, Nunavut.
+    - Code configured for snobots to be deployed in Breitenbush Watershed.
 
     Components:
     - Rock7 RockBLOCK 9603
-    - Maxtena M1621HCT-P-SMA antenna (optional)
+    - Maxtena M1600HCT-P-SMA antenna (optional)
+    - Adafruit LoRa Radio Featherwing 
     - Adafruit Feather M0 Adalogger
     - Adafruit Ultimate GPS Featherwing
-    - Adafruit BME280 Temperature Humidity Pressure Sensor
-    - Adafruit LSM303AGR Accelerometer/Magnetomter
+    - Adafruit BME280 Temperature Humidity Pressure Sensor --
+    - Adafruit LSM303AGR Accelerometer/Magnetomter --
     - Pololu 3.3V 600mA Step-Down Voltage Regulator D36V6F3
     - Pololu 5V 600mA Step-Down Voltage Regulator D36V6F5
-    - Pololu 12V 600mA Step-Down Voltage Regulator D36V6F5
-    - SanDisk Industrial XI 8 GB microSD card
+    - SanDisk Max Endurance 32 GB microSD card
 
     Sensors:
-    - RM Young 05103L Wind Monitor
-    - Vaisala HMP60 Humidity and Temperature Probe
+    - Apogee SP-212 Pyranometer (x2)
+    - Maxbotix MB7354 HRXL-MaxSoar-WRS5 Snow Depth Sensor 
+    // TEROS 10 Soil Moisture Sensor (x2)    
+    - Adafruit SHT-30 Humidity and Temperature Sensor --
 
     Comments:
-    - Sketch uses 98720 bytes (37%) of program storage space. Maximum is 262144 bytes.
-    - Power consumption in deep sleep is ~625 uA at 12.5V
+
+    Code Integrates work done by Adam Garbo and Chris Cosgrove 
 
 */
 
@@ -58,6 +62,11 @@
 #define LOGGING         true  // Log data to microSD
 
 // ----------------------------------------------------------------------------
+// Constants
+// ----------------------------------------------------------------------------
+#define NODE_STATION   false    // Set if node is just to transmit messages by LoRa
+#define BASE_STATION   false    // Set if RockBlock is installed and you wish to listen for LoRa messages
+// ----------------------------------------------------------------------------
 // Debugging macros
 // ----------------------------------------------------------------------------
 #define DEBUG           true  // Output debug messages to Serial Monitor
@@ -88,14 +97,16 @@
 // Pin definitions
 // ----------------------------------------------------------------------------
 #define PIN_VBAT            A0
-#define PIN_WIND_SPEED      A1
-#define PIN_WIND_DIR        A2
-#define PIN_HUMID           A3
-#define PIN_TEMP            A4
-#define PIN_GNSS_EN         A5
-#define PIN_MICROSD_CS      4
+#define PIN_SP212_1         A1  // Apogee Pyranometer 1 (upward)
+#define PIN_SP212_2         A2  // Apogee Pyranometer 2 (downward)
+#define PIN_MB_pw           A3  // maxbotix pulse width pin 
+// #define PIN_SOIL_1          A3  // TEROS 10 1 (15 cm)
+#define PIN_SOIL_2          A4  // TEROS 10 2 (30cm)
+#define PIN_GNSS_EN         A5  
+#define PIN_MICROSD_CS      4   //SD Card
 #define PIN_12V_EN          5   // 12 V step-up/down regulator
 #define PIN_5V_EN           6   // 5V step-down regulator
+#define PIN_MB_sleep        7   // maxbotix sleep  
 #define PIN_LED_GREEN       8   // Green LED
 #define PIN_IRIDIUM_RX      10  // Pin 1 RXD (Yellow)
 #define PIN_IRIDIUM_TX      11  // Pin 6 TXD (Orange)
@@ -153,10 +164,15 @@ Statistic humidityIntStats;     // Internal humidity
 Statistic pressureIntStats;     // Internal pressure
 Statistic temperatureExtStats;  // External temperature
 Statistic humidityExtStats;     // External humidity
-Statistic solarStats;           // Solar radiation
-Statistic windSpeedStats;       // Wind speed
-Statistic uStats;               // Wind east-west wind vector component (u)
-Statistic vStats;               // Wind north-south wind vector component (v)
+Statistic shortwave1Stats;       // Incoming short wave radiation (SP-212)
+Statistic shortwave2Stats;       // Outgoing short wave radiation (SP-212)
+Statistic soilmoist1Stats;      // Soil Moisture (TEROS-10)
+Statistic soilmoist2Stats;      // Soil Moisture (TEROS-10)
+Statistic MaxbotixStats_av;     // Maxbotix average distances
+Statistic MaxbotixStats_std;    // Maxbotix std distances
+Statistic MaxbotixStats_max;    // Maxbotix max distances
+Statistic MaxbotixStats_min;    // Maxbotix min distances
+Statistic MaxbotixStats_nan;    // Maxbotix nan samples
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
@@ -207,11 +223,15 @@ float         temperatureExt    = 0.0;    // External temperature (°C)
 float         humidityExt       = 0.0;    // External humidity (%)
 float         pitch             = 0.0;    // Pitch (°)
 float         roll              = 0.0;    // Roll (°)
-float         solar             = 0.0;    // Solar radiation
-float         windSpeed         = 0.0;    // Wind speed (m/s)
-float         windDirection     = 0.0;    // Wind direction (°)
-float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
-float         windGustDirection = 0.0;    // Wind gust direction (°)
+float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+float         soilmoist1        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+float         soilmoist2        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+unsigned int  distMaxbotix_av   = 0;      // Average distance from Maxbotix sensor to surface (mm)
+unsigned int  distMaxbotix_std  = 0;      // Std distance from Maxbotix sensor to surface (mm)
+unsigned int  distMaxbotix_max  = 0;      // Max distance from Maxbotix sensor to surface (mm)
+unsigned int  distMaxbotix_min  = 0;      // Min distance from Maxbotix sensor to surface (mm)
+unsigned int  distMaxbotix_nan  = 0;      // Number of NaN readings in Maxbotix
 float         voltage           = 0.0;    // Battery voltage (V)
 float         latitude          = 0.0;    // GNSS latitude (DD)
 float         longitude         = 0.0;    // GNSS longitude (DD)
@@ -220,7 +240,7 @@ float         hdop              = 0.0;    // GNSS HDOP
 tmElements_t  tm;                         // Variable for converting time elements to time_t
 
 // ----------------------------------------------------------------------------
-// Unions/structures
+// Unions/structures **not updated 
 // ----------------------------------------------------------------------------
 
 // Union to store Iridium Short Burst Data (SBD) Mobile Originated (MO) messages
@@ -241,10 +261,19 @@ typedef union
     uint16_t  windDirection;      // Mean wind direction (°)        (2 bytes)
     uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
     uint16_t  windGustDirection;  // Wind gust direction (°)        (2 bytes)
+    unsigned int  distMaxbotix_av   = 0;      // Average distance from Maxbotix sensor to surface (mm)
+    unsigned int  distMaxbotix_std  = 0;      // Std distance from Maxbotix sensor to surface (mm)
+    unsigned int  distMaxbotix_max  = 0;      // Max distance from Maxbotix sensor to surface (mm)
+    unsigned int  distMaxbotix_min  = 0;      // Min distance from Maxbotix sensor to surface (mm)
+    unsigned int  distMaxbotix_nan  = 0;      // Number of NaN readings in Maxbotix
     //int32_t   latitude;           // Latitude (DD)                  (4 bytes)   * 1000000
     //int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     //uint8_t   satellites;         // # of satellites                (1 byte)
     //uint16_t  hdop;               // HDOP                           (2 bytes)
+    float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+    float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+    float         soilmoist1        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+    float         soilmoist2        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
     uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   * 100
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
     uint8_t   transmitStatus;     // Iridium return code            (1 byte)
@@ -291,11 +320,16 @@ struct struct_timer
   unsigned long readGnss;
   unsigned long readBme280;
   unsigned long readLsm303;
-  unsigned long readHmp60;
-  unsigned long readSht31;
-  unsigned long read5103L;
-  unsigned long read7911;
-  unsigned long readSp212;
+  // unsigned long readHmp60;
+  // unsigned long readSht31;
+  unsigned long readsht30;
+  // unsigned long read5103L;
+  // unsigned long read7911;
+  unsigned long readSp212_1;
+  unsigned long readSp212_2;
+  unsigned long readteros10_1;
+  unsigned long readteros10_2;
+  unsigned long readMxBtx;
   unsigned long iridium;
 } timer;
 
@@ -312,6 +346,8 @@ void setup()
   pinMode(PIN_12V_EN, OUTPUT);
   pinMode(PIN_GNSS_EN, OUTPUT);
   pinMode(PIN_VBAT, INPUT);
+  pinMode(PIN_MB_pw, INPUT);          //maxbotix pulse width 
+  pinMode(PIN_MB_sleep, OUTPUT);      // max botix slep pin 
   digitalWrite(PIN_LED_GREEN, LOW);   // Disable green LED
   digitalWrite(PIN_LED_RED, LOW);     // Disable red LED
   digitalWrite(PIN_SENSOR_PWR, LOW);  // Disable power to 3.3V
@@ -347,21 +383,25 @@ void setup()
   configureSd();        // Configure microSD
   printSettings();      // Print configuration settings
   readGnss();           // Sync RTC with GNSS
-  configureIridium();   // Configure Iridium 9603 transceiver
-  createLogFile();      // Create initial log file
+  //configureIridium();   // Configure Iridium 9603 transceiver
+  //createLogFile();      // Create initial log file
 
 #if CALIBRATE
   enable5V();   // Enable 5V power
-  enable12V();  // Enable 12V power
+  //enable12V();  // Enable 12V power
 
   while (true)
   {
     petDog(); // Reset WDT
 
-    //calibrateAdc();
-    read5103L();
-    readHmp60();
+    calibrateAdc();
+    //read5103L();
+    //readHmp60();
     myDelay(500);
+    readsht30();
+    readSP212_1();
+    readSP212_2();
+    readMxBtx();
   }
 #endif
 
@@ -443,15 +483,18 @@ void loop()
 
       // Perform measurements
       enable5V();       // Enable 5V power
-      enable12V();      // Enable 12V power
+      //enable12V();      // Enable 12V power
       readBme280();     // Read sensor
       readLsm303();     // Read accelerometer
-      //readSp212();      // Read solar radiation
+      readSp212_1();    // Read solar radiation 1 (incoming)
+      readSp212_2();    // Read Solar Radiation 2 (ougoing) 
+      readsht30();      // Read temperature/relative humidity sensor
       //readSht31();      // Read temperature/relative humidity sensor
       //read7911();       // Read anemometer
-      readHmp60();      // Read temperature/relative humidity sensor
-      read5103L();      // Read anemometer
-      disable12V();     // Disable 12V power
+      // readHmp60();      // Read temperature/relative humidity sensor
+      readMxBtx();      // Read Max Botix 
+      // read5103L();      // Read anemometer
+      // disable12V();     // Disable 12V power
       disable5V();      // Disable 5V power
 
       // Print summary of statistics
@@ -460,14 +503,14 @@ void loop()
       // Check if number of samples collected has been reached and calculate statistics (if enabled)
       if ((sampleCounter == averageInterval) || firstTimeFlag)
       {
-        calculateStats(); // Calculate statistics of variables to be transmitted
-        writeBuffer();    // Write data to transmit buffer
+        // calculateStats(); // Calculate statistics of variables to be transmitted
+        // writeBuffer();    // Write data to transmit buffer
 
         // Check if data transmission interval has been reached
         if ((transmitCounter == transmitInterval) || firstTimeFlag)
         {
-          readGnss();       // Sync RTC with the GNSS
-          transmitData();   // Transmit data via Iridium transceiver
+          // readGnss();       // Sync RTC with the GNSS
+          // transmitData();   // Transmit data via Iridium transceiver
         }
         sampleCounter = 0; // Reset sample counter
       }
