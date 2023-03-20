@@ -193,6 +193,7 @@ void readLsm303()
 // Black      A4      CH2: Temperature (0 - 2.5V)
 // Shield     GND     Earth ground
 // ----------------------------------------------------------------------------
+ /*
  void readHmp60()
 {
   // Start loop timer
@@ -232,6 +233,7 @@ void readLsm303()
   // Stop loop timer
   timer.readHmp60 = millis() - loopStartTime;
 }
+*/
 
 // ----------------------------------------------------------------------------
 // Apogee SP-212 Pyranometer 
@@ -264,7 +266,7 @@ void readSp212_1()
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINT(F("mV,")); 
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
 
   // Add to statistics object
   shortwave1Stats.add(voltage);
@@ -293,7 +295,7 @@ void readSp212_2()
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINT(F("mV,")); 
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
 
   // Add to statistics object
   shortwave2Stats.add(voltage);
@@ -318,6 +320,7 @@ void readSp212_2()
 // Shield     GND       Earth ground
 //
 // ----------------------------------------------------------------------------
+ /*
  void read5103L()
 {
   unsigned int loopStartTime = millis();
@@ -372,7 +375,7 @@ void readSp212_2()
   // Stop loop timer
   timer.read5103L = millis() - loopStartTime;
 }
-
+*/
 // ----------------------------------------------------------------------------
 // Davis Instruments 7911 Anemometer
 // ------------------------------
@@ -383,6 +386,7 @@ void readSp212_2()
 // Yellow   5V      Power
 // Red      GND     Ground
 // ----------------------------------------------------------------------------
+ /*
  void read7911()
 {
   uint32_t loopStartTime = millis();
@@ -505,7 +509,7 @@ void windVectors()
   moSbdMessage.windSpeed = rvWindSpeed * 100;         // Resultant mean wind speed (m/s)
   moSbdMessage.windDirection = rvWindDirection * 10;  // Resultant mean wind direction (°)
 }
-
+*/
 // ----------------------------------------------------------------------------
 // Adafruit Temperature Humidity Sensor (SHT-30) 
 // ------------------------------
@@ -520,33 +524,26 @@ void windVectors()
 //----------------------------------------------------------------------------
 //adapted from previous SHT-31 program 
 
-void readsht30()
-{
+void readsht30(){
   // Start the loop timer
   unsigned long loopStartTime = millis();
 
   DEBUG_PRINT("Info - Reading SHT30...");
 
-  // Disable I2C bus //why are we disabling this before reading the sensor?
-  Wire.end();
-
   // Add delay
   myDelay(100);
 
   // Read sensor
-  temperatureExt = sht.readTemperatureC();
-  humidityExt = sht.readHumidity();
+  temperatureExt = sht31.readTemperature();
+  humidityExt = sht31.readHumidity();
 
   // Add to statistics object
   temperatureExtStats.add(temperatureExt);
   humidityExtStats.add(humidityExt);
 
   // Print debug info
-  //DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
-  //DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
-
-  // Re-enable I2C bus
-  Wire.begin();
+  DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
+  DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
 
   // Stop the loop timer
   timer.readsht30 = millis() - loopStartTime;
@@ -573,6 +570,8 @@ void readMxBtx() {
   // Wake sensor
   digitalWrite(PIN_MB_sleep, HIGH);
   delay(100);
+
+   DEBUG_PRINT("Info - Reading MaxBotix...");
   
   // Create a temporary Statistic array to hold the maxbotix measurements
   Statistic Maxbotix;
@@ -638,8 +637,10 @@ void readMxBtx() {
   // Clear local array
   Maxbotix.clear();
 
+  DEBUG_PRINTLN("done.");
+
   // Print debug info
-  DEBUG_PRINT(F("Distance: ")); DEBUG_PRINT_DEC(z_av, 4); DEBUG_PRINT(F("in,")); DEBUG_PRINT(z_nan); DEBUG_PRINTLN(F(","));
+  DEBUG_PRINT(F("Distance: ")); DEBUG_PRINT_DEC(z_av, 4); DEBUG_PRINT(F(" in, Nan Count:")); DEBUG_PRINT(z_nan); DEBUG_PRINTLN(F(","));
 
 
   

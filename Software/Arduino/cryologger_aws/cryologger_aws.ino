@@ -50,6 +50,7 @@
 #include <TinyGPS++.h>              // https://github.com/mikalhart/TinyGPSPlus (v1.0.3)
 #include <Wire.h>                   // https://www.arduino.cc/en/Reference/Wire
 #include <wiring_private.h>         // Required for creating new Serial instance
+#include "Adafruit_SHT31.h"         //for external temp sensor
 
 // ----------------------------------------------------------------------------
 // Define unique identifier
@@ -69,7 +70,7 @@
 // ----------------------------------------------------------------------------
 // Debugging macros
 // ----------------------------------------------------------------------------
-#define DEBUG           true  // Output debug messages to Serial Monitor
+#define DEBUG           true // Output debug messages to Serial Monitor
 #define DEBUG_GNSS      false  // Output GNSS debug information
 #define DEBUG_IRIDIUM   false  // Output Iridium debug messages to Serial Monitor
 #define CALIBRATE       false // Enable sensor calibration code
@@ -148,6 +149,7 @@ SdFs                            sd;           // File system object
 FsFile                          logFile;      // Log file
 TinyGPSPlus                     gnss;
 sensirion                       sht(20, 21);  // (data, clock). Pull-up required on data pin
+Adafruit_SHT31                  sht31 = Adafruit_SHT31();
 
 // Custom TinyGPS objects to store fix and validity information
 // Note: $GPGGA and $GPRMC sentences produced by GPS receivers (PA6H module)
@@ -180,7 +182,7 @@ Statistic MaxbotixStats_nan;    // Maxbotix nan samples
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
 // ----------------------------------------------------------------------------
-unsigned long sampleInterval    = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds)
+unsigned long sampleInterval    = 0.5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
 unsigned int  averageInterval   = 12;     // Number of samples to be averaged in each message. Default: 12 (hourly)
 unsigned int  transmitInterval  = 1;      // Number of messages in each Iridium transmission (340-byte limit)
 unsigned int  retransmitLimit   = 2;      // Failed data transmission reattempts (340-byte limit)
@@ -407,8 +409,8 @@ void setup()
     //readHmp60();
     myDelay(500);
     readsht30();
-    readSP212_1();
-    readSP212_2();
+    readSp212_1();
+    readSp212_2();
     readMxBtx();
   }
 #endif
