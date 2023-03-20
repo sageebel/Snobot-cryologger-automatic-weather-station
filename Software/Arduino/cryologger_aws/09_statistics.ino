@@ -95,8 +95,8 @@ void printStats()
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(soilmoist2Stats.average());
   DEBUG_PRINT(F("Max Botix"));                                                  printTab(2);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(MaxbotixStats_av.count());        printTab(1); 
-  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_min.min());             printTab(1);
-  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_max.max());             printTab(1);
+  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_min.minimum());             printTab(1);
+  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_max.maximum());             printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(MaxbotixStats_av.average());            printTab(1);
   DEBUG_PRINT(F("NAN count: "));  DEBUG_PRINTLN(MaxbotixStats_nan.count());            
   DEBUG_PRINT(F("Wind speed"));   printTab(1);

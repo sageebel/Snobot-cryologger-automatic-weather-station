@@ -64,7 +64,7 @@ void readBme280()
 // White     SCK      Clock
 // Blue      SDA      Data
 // ----------------------------------------------------------------------------
-void readSht31()
+ void readSht31()
 {
   // Start the loop timer
   unsigned long loopStartTime = millis();
@@ -193,7 +193,7 @@ void readLsm303()
 // Black      A4      CH2: Temperature (0 - 2.5V)
 // Shield     GND     Earth ground
 // ----------------------------------------------------------------------------
-void readHmp60()
+ void readHmp60()
 {
   // Start loop timer
   unsigned long loopStartTime = millis();
@@ -318,7 +318,7 @@ void readSp212_2()
 // Shield     GND       Earth ground
 //
 // ----------------------------------------------------------------------------
-void read5103L()
+ void read5103L()
 {
   unsigned int loopStartTime = millis();
 
@@ -383,7 +383,7 @@ void read5103L()
 // Yellow   5V      Power
 // Red      GND     Ground
 // ----------------------------------------------------------------------------
-void read7911()
+ void read7911()
 {
   uint32_t loopStartTime = millis();
 

@@ -164,6 +164,9 @@ Statistic humidityIntStats;     // Internal humidity
 Statistic pressureIntStats;     // Internal pressure
 Statistic temperatureExtStats;  // External temperature
 Statistic humidityExtStats;     // External humidity
+Statistic windSpeedStats;       // Wind speed
+Statistic uStats;               // Wind east-west wind vector component (u)
+Statistic vStats;               // Wind north-south wind vector component (v)
 Statistic shortwave1Stats;       // Incoming short wave radiation (SP-212)
 Statistic shortwave2Stats;       // Outgoing short wave radiation (SP-212)
 Statistic soilmoist1Stats;      // Soil Moisture (TEROS-10)
@@ -223,6 +226,11 @@ float         temperatureExt    = 0.0;    // External temperature (°C)
 float         humidityExt       = 0.0;    // External humidity (%)
 float         pitch             = 0.0;    // Pitch (°)
 float         roll              = 0.0;    // Roll (°)
+float         solar             = 0.0;    // Solar radiation
+float         windSpeed         = 0.0;    // Wind speed (m/s)
+float         windDirection     = 0.0;    // Wind direction (°)
+float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
+float         windGustDirection = 0.0;    // Wind gust direction (°)
 float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
 float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
 float         soilmoist1        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
@@ -240,7 +248,7 @@ float         hdop              = 0.0;    // GNSS HDOP
 tmElements_t  tm;                         // Variable for converting time elements to time_t
 
 // ----------------------------------------------------------------------------
-// Unions/structures **not updated 
+// Unions/structures 
 // ----------------------------------------------------------------------------
 
 // Union to store Iridium Short Burst Data (SBD) Mobile Originated (MO) messages
@@ -266,10 +274,10 @@ typedef union
     unsigned int  distMaxbotix_max  = 0;      // Max distance from Maxbotix sensor to surface (mm)
     unsigned int  distMaxbotix_min  = 0;      // Min distance from Maxbotix sensor to surface (mm)
     unsigned int  distMaxbotix_nan  = 0;      // Number of NaN readings in Maxbotix
-    //int32_t   latitude;           // Latitude (DD)                  (4 bytes)   * 1000000
-    //int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
-    //uint8_t   satellites;         // # of satellites                (1 byte)
-    //uint16_t  hdop;               // HDOP                           (2 bytes)
+    int32_t   latitude;           // Latitude (DD)                  (4 bytes)   * 1000000
+    int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
+    uint8_t   satellites;         // # of satellites                (1 byte)
+    uint16_t  hdop;               // HDOP                           (2 bytes)
     float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
     float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
     float         soilmoist1        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
@@ -320,11 +328,11 @@ struct struct_timer
   unsigned long readGnss;
   unsigned long readBme280;
   unsigned long readLsm303;
-  // unsigned long readHmp60;
-  // unsigned long readSht31;
+  unsigned long readHmp60;
+  unsigned long readSht31;
   unsigned long readsht30;
-  // unsigned long read5103L;
-  // unsigned long read7911;
+  unsigned long read5103L;
+  unsigned long read7911;
   unsigned long readSp212_1;
   unsigned long readSp212_2;
   unsigned long readteros10_1;
