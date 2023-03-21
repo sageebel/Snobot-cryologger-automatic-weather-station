@@ -70,10 +70,10 @@
 // ----------------------------------------------------------------------------
 // Debugging macros
 // ----------------------------------------------------------------------------
-#define DEBUG           true // Output debug messages to Serial Monitor
+#define DEBUG           true   // Output debug messages to Serial Monitor
 #define DEBUG_GNSS      false  // Output GNSS debug information
 #define DEBUG_IRIDIUM   false  // Output Iridium debug messages to Serial Monitor
-#define CALIBRATE       false // Enable sensor calibration code
+#define CALIBRATE       false   // Enable sensor calibration code
 
 #if DEBUG
 #define DEBUG_PRINT(x)            SERIAL_PORT.print(x)
@@ -100,14 +100,14 @@
 #define PIN_VBAT            A0
 #define PIN_SP212_1         A1  // Apogee Pyranometer 1 (upward)
 #define PIN_SP212_2         A2  // Apogee Pyranometer 2 (downward)
-#define PIN_MB_pw           A3  // maxbotix pulse width pin 
+#define PIN_MB_pw           11  // maxbotix pulse width pin 
 // #define PIN_SOIL_1          A3  // TEROS 10 1 (15 cm)
 #define PIN_SOIL_2          A4  // TEROS 10 2 (30cm)
 #define PIN_GNSS_EN         A5  
 #define PIN_MICROSD_CS      4   //SD Card
 #define PIN_12V_EN          5   // 12 V step-up/down regulator
 #define PIN_5V_EN           6   // 5V step-down regulator
-#define PIN_MB_sleep        7   // maxbotix sleep  
+#define PIN_MB_sleep        12   // maxbotix sleep  
 #define PIN_LED_GREEN       8   // Green LED
 #define PIN_IRIDIUM_RX      10  // Pin 1 RXD (Yellow)
 #define PIN_IRIDIUM_TX      11  // Pin 6 TXD (Orange)
@@ -115,11 +115,13 @@
 #define PIN_LED_RED         13
 
 // Unused
+
 #define PIN_SOLAR           7
 #define PIN_SENSOR_PWR      7
 #define PIN_RFM95_CS        7   // LoRa "B"
 #define PIN_RFM95_RST       7   // LoRa "A"
 #define PIN_RFM95_INT       7   // LoRa "D"
+
 
 // ------------------------------------------------------------------------------------------------
 // Port configuration
@@ -182,7 +184,7 @@ Statistic MaxbotixStats_nan;    // Maxbotix nan samples
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
 // ----------------------------------------------------------------------------
-unsigned long sampleInterval    = 0.5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
+unsigned long sampleInterval    = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
 unsigned int  averageInterval   = 12;     // Number of samples to be averaged in each message. Default: 12 (hourly)
 unsigned int  transmitInterval  = 1;      // Number of messages in each Iridium transmission (340-byte limit)
 unsigned int  retransmitLimit   = 2;      // Failed data transmission reattempts (340-byte limit)
@@ -211,6 +213,8 @@ byte          retransmitCounter = 0;      // Counter for Iridium 9603 transmissi
 byte          transmitCounter   = 0;      // Counter for Iridium 9603 transmission intervals
 byte          currentLogFile    = 0;      // Counter for tracking when new microSD log files are created
 byte          newLogFile        = 0;      // Counter for tracking when new microSD log files are created
+byte          currentDate       = 0;      // Variable for tracking when the date changes
+byte          newDate           = 0;      // Variable for tracking when the date changes
 int           transmitStatus    = 0;      // Iridium transmission status code
 unsigned int  iterationCounter  = 0;      // Counter for program iterations (zero indicates a reset)
 unsigned int  failureCounter    = 0;      // Counter of consecutive failed Iridium transmission attempts
@@ -394,7 +398,7 @@ void setup()
   printSettings();      // Print configuration settings
   readGnss();           // Sync RTC with GNSS
   //configureIridium();   // Configure Iridium 9603 transceiver
-  //createLogFile();      // Create initial log file
+  createLogFile();      // Create initial log file
 
 #if CALIBRATE
   enable5V();   // Enable 5V power
@@ -513,14 +517,22 @@ void loop()
       // Check if number of samples collected has been reached and calculate statistics (if enabled)
       if ((sampleCounter == averageInterval) || firstTimeFlag)
       {
-        // calculateStats(); // Calculate statistics of variables to be transmitted
-        // writeBuffer();    // Write data to transmit buffer
+         calculateStats(); // Calculate statistics of variables to be transmitted
+         writeBuffer();    // Write data to transmit buffer
 
         // Check if data transmission interval has been reached
         if ((transmitCounter == transmitInterval) || firstTimeFlag)
         {
-          // readGnss();       // Sync RTC with the GNSS
-          // transmitData();   // Transmit data via Iridium transceiver
+          // Check for date change
+          checkDate();
+          if (firstTimeFlag || (currentDate != newDate))
+          {
+            readGnss(); // Sync RTC with the GNSS
+            currentDate = newDate;
+            Serial.print("currentDate: "); Serial.println(currentDate);
+            Serial.print("newDate: "); Serial.println(newDate);
+          }
+          // transmitData(); // Transmit data via Iridium transceiver
         }
         sampleCounter = 0; // Reset sample counter
       }

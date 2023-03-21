@@ -266,7 +266,7 @@ void readSp212_1()
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT(voltage); DEBUG_PRINT(F("W/m^2, ")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
 
   // Add to statistics object
   shortwave1Stats.add(voltage);
@@ -295,7 +295,7 @@ void readSp212_2()
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT_DEC(voltage, 4); DEBUG_PRINT(F("W/m^2,")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT(voltage); DEBUG_PRINT(F("W/m^2, ")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
 
   // Add to statistics object
   shortwave2Stats.add(voltage);
@@ -529,7 +529,7 @@ void readsht30(){
   unsigned long loopStartTime = millis();
 
   DEBUG_PRINT("Info - Reading SHT30...");
-
+  sht31.begin(0x44);
   // Add delay
   myDelay(100);
 
@@ -542,8 +542,8 @@ void readsht30(){
   humidityExtStats.add(humidityExt);
 
   // Print debug info
-  DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
-  DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
+  DEBUG_PRINT(F("Temperature: ")); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
+  DEBUG_PRINT(F("Humidity: ")); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
 
   // Stop the loop timer
   timer.readsht30 = millis() - loopStartTime;
@@ -600,10 +600,10 @@ void readMxBtx() {
   }
 
   // Get stats from the Maxbotix array in inches
-  z_av = Maxbotix.average()/25.4, 0;
-  z_std = Maxbotix.pop_stdev()/25.4, 0;
-  z_max = Maxbotix.maximum()/25.4, 0;
-  z_min = Maxbotix.minimum()/25.4, 0;
+  z_av = Maxbotix.average(), 0;
+  z_std = Maxbotix.pop_stdev(), 0;
+  z_max = Maxbotix.maximum(), 0;
+  z_min = Maxbotix.minimum(), 0;
     
   // Deal with issue of a maximum long number in the instance of no
   // readings within filtered range
@@ -640,7 +640,7 @@ void readMxBtx() {
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("Distance: ")); DEBUG_PRINT_DEC(z_av, 4); DEBUG_PRINT(F(" in, Nan Count:")); DEBUG_PRINT(z_nan); DEBUG_PRINTLN(F(","));
+  DEBUG_PRINT(F("Distance: ")); DEBUG_PRINT(z_av); DEBUG_PRINT(F(" mm, Nan Count:")); DEBUG_PRINT(z_nan); DEBUG_PRINTLN(F(","));
 
 
   
