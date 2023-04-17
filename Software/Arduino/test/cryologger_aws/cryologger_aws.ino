@@ -73,7 +73,7 @@
 #define DEBUG           true   // Output debug messages to Serial Monitor
 #define DEBUG_GNSS      false  // Output GNSS debug information
 #define DEBUG_IRIDIUM   false  // Output Iridium debug messages to Serial Monitor
-#define CALIBRATE       true  // Enable sensor calibration code
+#define CALIBRATE       false   // Enable sensor calibration code
 
 #if DEBUG
 #define DEBUG_PRINT(x)            SERIAL_PORT.print(x)
@@ -100,7 +100,7 @@
 #define PIN_VBAT            A0
 #define PIN_SP212_1         A1  // Apogee Pyranometer 1 (upward)
 #define PIN_SP212_2         A2  // Apogee Pyranometer 2 (downward)
-#define PIN_MB_pw           11  // maxbotix analog pin 
+#define PIN_MB_pw           11  // maxbotix pulse width pin 
 // #define PIN_SOIL_1          A3  // TEROS 10 1 (15 cm)
 #define PIN_SOIL_2          A4  // TEROS 10 2 (30cm)
 #define PIN_GNSS_EN         A5  
@@ -111,7 +111,7 @@
 #define PIN_LED_GREEN       8   // Green LED
 #define PIN_IRIDIUM_RX      10  // Pin 1 RXD (Yellow)
 #define PIN_IRIDIUM_TX      11  // Pin 6 TXD (Orange)
-//#define PIN_IRIDIUM_SLEEP   12  // Pin 7 OnOff (Grey)
+#define PIN_IRIDIUM_SLEEP   12  // Pin 7 OnOff (Grey)
 #define PIN_LED_RED         13
 
 // Unused
@@ -145,7 +145,7 @@ void SERCOM1_Handler()
 // ----------------------------------------------------------------------------
 Adafruit_BME280                 bme280;
 Adafruit_LSM303_Accel_Unified   lsm303 = Adafruit_LSM303_Accel_Unified(54321); // I2C address: 0x1E
-IridiumSBD                      modem(IRIDIUM_PORT, PIN_IRIDIUM_RX);
+IridiumSBD                      modem(IRIDIUM_PORT, PIN_IRIDIUM_SLEEP);
 RTCZero                         rtc;
 SdFs                            sd;           // File system object
 FsFile                          logFile;      // Log file

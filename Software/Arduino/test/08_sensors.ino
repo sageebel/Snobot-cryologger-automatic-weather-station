@@ -261,15 +261,15 @@ void readSp212_1()
   // shortwave1 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2 //this is not working in testing need to troubleshoot 
 
   // Calculate measured voltages
-  float shortwave1 = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
+  float voltage = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
 
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT(shortwave1); DEBUG_PRINT(F("W/m^2, ")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT(voltage); DEBUG_PRINT(F("W/m^2, ")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
 
   // Add to statistics object
-  shortwave1Stats.add(shortwave1);
+  shortwave1Stats.add(voltage);
 
   // Stop loop timer
   timer.readSp212_1 = millis() - loopStartTime;
@@ -284,22 +284,21 @@ void readSp212_2()
 
   // Perform analog readings
   //(void)analogRead(PIN_SP212_2);
-  float sensorValue2 = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
+  float sensorValue = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
   //shortwave2 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2 //this inst working need to troubleshoot 
 
   // Calculate measured voltages
-  //float shortwave2 = sensorValue * (0.8);
-  shortwave2 = sensorValue2 * (0.8);
+  float voltage = sensorValue * (0.8);
 
   DEBUG_PRINTLN("done.");
 
   // Print debug info
-  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT(shortwave2); DEBUG_PRINT(F("W/m^2, ")); DEBUG_PRINT(sensorValue2); DEBUG_PRINTLN(F("mV,")); 
+  DEBUG_PRINT(F("solar: ")); DEBUG_PRINT(voltage); DEBUG_PRINT(F("W/m^2, ")); DEBUG_PRINT(sensorValue); DEBUG_PRINTLN(F("mV,")); 
 
   // Add to statistics object
-  shortwave2Stats.add(shortwave2);
+  shortwave2Stats.add(voltage);
 
   // Stop loop timer
   timer.readSp212_2 = millis() - loopStartTime;
@@ -518,7 +517,7 @@ void windVectors()
 // ------------------------------
 // Brown/red       3.3V     Power
 // Black           GND      Ground
-// Yellow          SCL      Clock
+// Yellow          SCK      Clock
 // Blue/Green      SDA      Data
 // ----------------------------------------------------------------------------
 // default I2C - 0x44
@@ -560,7 +559,7 @@ void readsht30(){
 // White           Temperature Sensor      Not connected
 // Orange          Pulse Width Output      Not connected
 // Brown    A3     Analog Voltage Output   Analog In
-// Green    12      Ranging Start/Stop      Not connected
+// Green    7      Ranging Start/Stop      Not connected
 // Blue            Serial Output           Not connected
 // Red      5V     Vcc                     5V
 // Black    GND    GND                     GND
@@ -650,3 +649,4 @@ void readMxBtx() {
   delay(100);
   
 }
+
