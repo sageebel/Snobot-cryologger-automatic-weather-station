@@ -1,6 +1,6 @@
 /*
     Title:                Snobots 
-    Date:                 March 16, 2023
+    Date:                 April 17, 2023
     Author:               Adam Garbo 
     Modifications By:     Sage Ebel 
     Version:              0.1.a
@@ -71,9 +71,9 @@
 // Debugging macros
 // ----------------------------------------------------------------------------
 #define DEBUG           true   // Output debug messages to Serial Monitor
-#define DEBUG_GNSS      false  // Output GNSS debug information
+#define DEBUG_GNSS      true  // Output GNSS debug information
 #define DEBUG_IRIDIUM   false  // Output Iridium debug messages to Serial Monitor
-#define CALIBRATE       true  // Enable sensor calibration code
+#define CALIBRATE       false  // Enable sensor calibration code
 
 #if DEBUG
 #define DEBUG_PRINT(x)            SERIAL_PORT.print(x)
@@ -100,18 +100,18 @@
 #define PIN_VBAT            A0
 #define PIN_SP212_1         A1  // Apogee Pyranometer 1 (upward)
 #define PIN_SP212_2         A2  // Apogee Pyranometer 2 (downward)
-#define PIN_MB_pw           11  // maxbotix analog pin 
 // #define PIN_SOIL_1          A3  // TEROS 10 1 (15 cm)
 #define PIN_SOIL_2          A4  // TEROS 10 2 (30cm)
 #define PIN_GNSS_EN         A5  
 #define PIN_MICROSD_CS      4   //SD Card
 #define PIN_12V_EN          5   // 12 V step-up/down regulator
 #define PIN_5V_EN           6   // 5V step-down regulator
-#define PIN_MB_sleep        12   // maxbotix sleep  
 #define PIN_LED_GREEN       8   // Green LED
 #define PIN_IRIDIUM_RX      10  // Pin 1 RXD (Yellow)
-#define PIN_IRIDIUM_TX      11  // Pin 6 TXD (Orange)
-//#define PIN_IRIDIUM_SLEEP   12  // Pin 7 OnOff (Grey)
+#define PIN_MB_pw           11  // maxbotix pulse width pin -U2
+#define PIN_MB_sleep        12   // maxbotix sleep - U1 
+#define PIN_IRIDIUM_TX      7  // Pin 6 TXD (Orange)
+#define PIN_IRIDIUM_SLEEP   7  // Pin 7 OnOff (Grey)
 #define PIN_LED_RED         13
 
 // Unused
@@ -270,7 +270,6 @@ typedef union
     uint16_t  humidityExt;        // External humidity (%)          (2 bytes)   * 10
     int16_t   pitch;              // Pitch (°)                      (2 bytes)   * 100
     int16_t   roll;               // Roll (°)                       (2 bytes)   * 100
-    //uint16_t  solar;              // Solar irradiance (W m-2)       (2 bytes)   * 100
     uint16_t  windSpeed;          // Mean wind speed (m/s)          (2 bytes)   * 100
     uint16_t  windDirection;      // Mean wind direction (°)        (2 bytes)
     uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
@@ -365,7 +364,7 @@ void setup()
   digitalWrite(PIN_LED_GREEN, LOW);   // Disable green LED
   digitalWrite(PIN_LED_RED, LOW);     // Disable red LED
   digitalWrite(PIN_SENSOR_PWR, LOW);  // Disable power to 3.3V
-  digitalWrite(PIN_5V_EN, LOW);       // Disable power to Iridium 9603
+  digitalWrite(PIN_5V_EN, HIGH);       // Disable power to Iridium 9603 ~edited 4/18/2023 to test sp-212 sensors (changed to HIGH)
   digitalWrite(PIN_12V_EN, LOW);      // Disable 12V power
   digitalWrite(PIN_GNSS_EN, HIGH);    // Disable power to GNSS
 

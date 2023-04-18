@@ -258,10 +258,10 @@ void readSp212_1()
   float sensorValue = analogRead(PIN_SP212_1); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  // shortwave1 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2 //this is not working in testing need to troubleshoot 
+  shortwave1 = mapFloat(sensorValue, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this is not working in testing need to troubleshoot 
 
   // Calculate measured voltages
-  float shortwave1 = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
+  //float shortwave1 = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
 
   DEBUG_PRINTLN("done.");
 
@@ -287,11 +287,10 @@ void readSp212_2()
   float sensorValue2 = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  //shortwave2 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 2000 W m^2 //this inst working need to troubleshoot 
+  shortwave2 = mapFloat(sensorValue2, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this inst working need to troubleshoot 
 
   // Calculate measured voltages
-  //float shortwave2 = sensorValue * (0.8);
-  shortwave2 = sensorValue2 * (0.8);
+ // float shortwave2 = sensorValue2 * (0.8);
 
   DEBUG_PRINTLN("done.");
 
@@ -543,8 +542,10 @@ void readsht30(){
   humidityExtStats.add(humidityExt);
 
   // Print debug info
-  DEBUG_PRINT(F("Temperature: ")); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
-  DEBUG_PRINT(F("Humidity: ")); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
+ // DEBUG_PRINT(F("Temperature: ")); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
+  //DEBUG_PRINT(F("Humidity: ")); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
+
+DEBUG_PRINTLN("Done.");
 
   // Stop the loop timer
   timer.readsht30 = millis() - loopStartTime;
@@ -557,13 +558,13 @@ void readsht30(){
 // --------------------------------------------------
 // Colour    Pin    Description             Notes
 // --------------------------------------------------
-// White           Temperature Sensor      Not connected
-// Orange          Pulse Width Output      Not connected
-// Brown    A3     Analog Voltage Output   Analog In
-// Green    12      Ranging Start/Stop      Not connected
-// Blue            Serial Output           Not connected
-// Red      5V     Vcc                     5V
-// Black    GND    GND                     GND
+// White          Temperature Sensor      Not connected
+// Orange   11    Pulse Width Output      Pulse width in 
+// Brown          Analog Voltage Output   Analog In (not connected)
+// Green    12    Ranging Start/Stop      Not connected
+// Blue           Serial Output           Not connected
+// Red      5V    Vcc                     5V
+// Black    GND   GND                     GND
 //
 // ----------------------------------------------------------------------------
 // Read Maxbotix distance to surface
@@ -600,7 +601,7 @@ void readMxBtx() {
     delay(100); // Delay 0.1 secs between readings
   }
 
-  // Get stats from the Maxbotix array in inches
+  // Get stats from the Maxbotix array in mm
   z_av = Maxbotix.average(), 0;
   z_std = Maxbotix.pop_stdev(), 0;
   z_max = Maxbotix.maximum(), 0;

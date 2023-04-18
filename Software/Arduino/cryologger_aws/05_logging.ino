@@ -96,7 +96,7 @@ void createLogFile()
   // Write header to file
   logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext,"
                   //"humidity_ext,pitch,roll,wind_speed,wind_direction,latitude,longitude,satellites,hdop,"
-                  "humidity_ext, pitch, roll, shortwave1, shortwave 2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan"
+                  "humidity_ext, pitch, roll, shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan"
                   "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
                   //"timer_readGnss,timer_bme280,timer_lsm303,timer_readHmp60,timer_read5103l,"
                   "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx,"
@@ -171,8 +171,8 @@ void logData()
       logFile.print(humidityExt);         logFile.print(",");
       logFile.print(pitch);               logFile.print(",");
       logFile.print(roll);                logFile.print(",");
-      logFile.print(shortwave1);          logFile.print(",");
-      logFile.print(shortwave2);          logFile.print(",");
+      logFile.print(shortwave1,2);        logFile.print(",");
+      logFile.print(shortwave2,2);        logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
       logFile.print(distMaxbotix_std);    logFile.print(","); 
       logFile.print(distMaxbotix_max);    logFile.print(","); 
@@ -237,7 +237,9 @@ void logData()
 
 #if DEBUG
       // Print logged data to Serial Monitor
-
+      printLine();
+      DEBUG_PRINTLN(F("Logged Data"));
+      printLine();
       DEBUG_PRINT("Info - Logging data to: "); DEBUG_PRINTLN(logFileName);
       DEBUG_PRINT(samplesSaved);        DEBUG_PRINT(",");
       DEBUG_PRINT(dateTime);            DEBUG_PRINT(",");

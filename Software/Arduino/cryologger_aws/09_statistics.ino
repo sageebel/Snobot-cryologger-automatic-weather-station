@@ -7,8 +7,9 @@ void calculateStats()
   moSbdMessage.pressureInt     = (pressureIntStats.average()     - 850) * 100;   // Mean internal pressure (hPa)
   moSbdMessage.temperatureExt  = temperatureExtStats.average()   * 100;          // Mean external temperature (°C)
   moSbdMessage.humidityExt     = humidityExtStats.average()      * 100;          // Mean external humidity (%)
-//  moSbdMessage.shortwave1Stats = shorwave1Stats.average()        * 10;           // Mean solar irradiance (W m-2)
-//  moSbdMessage.shortwave2Stats = shorwave2Stats.average()        * 10;           // Mean solar irradiance (W m-2)
+  moSbdMessage.shortwave1       = shortwave1Stats.average()        ;           // Mean solar irradiance (W m-2)
+  moSbdMessage.shortwave2       = shortwave2Stats.average()        ;           // Mean solar irradiance (W m-2)
+  moSbdMessage.distMaxbotix_av  = MaxbotixStats_av.average()       ;           // distance (mm)
   moSbdMessage.voltage          = batteryStats.average()          * 100;          // Mean battery voltage (V)
 
   // Calculate mean wind speed and direction vectors
@@ -30,7 +31,9 @@ void clearStats()
   humidityIntStats.clear();
   pressureIntStats.clear();
   temperatureExtStats.clear();
-  //solarStats.clear();
+  shortwave1Stats.clear();
+  shortwave2Stats.clear();
+  MaxbotixStats_av.clear();
   humidityExtStats.clear();
   windSpeedStats.clear();
   uStats.clear();
@@ -74,27 +77,27 @@ void printStats()
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(humidityExtStats.minimum());      printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(humidityExtStats.maximum());      printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(humidityExtStats.average());
-  DEBUG_PRINT(F("Short Wave 1"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Short Wave 1"));                                               printTab(1);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(shortwave1Stats.count());         printTab(1); 
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(shortwave1Stats.minimum());       printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(shortwave1Stats.maximum());       printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(shortwave1Stats.average());
-  DEBUG_PRINT(F("Short Wave 2"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Short Wave 2"));                                               printTab(1);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(shortwave2Stats.count());         printTab(1); 
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(shortwave2Stats.minimum());       printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(shortwave2Stats.maximum());       printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(shortwave2Stats.average());
-  DEBUG_PRINT(F("Soil Moist 1"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Soil Moist 1"));                                               printTab(1);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(soilmoist1Stats.count());         printTab(1); 
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(soilmoist1Stats.minimum());       printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(soilmoist1Stats.maximum());       printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(soilmoist1Stats.average());
-  DEBUG_PRINT(F("Soil Moist 2"));                                               printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Soil Moist 2"));                                               printTab(1);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(soilmoist2Stats.count());         printTab(1); 
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(soilmoist2Stats.minimum());       printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(soilmoist2Stats.maximum());       printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(soilmoist2Stats.average());
-  DEBUG_PRINT(F("Max Botix"));                                                  printTab(2);   // why 2 here
+  DEBUG_PRINT(F("Max Botix"));                                                  printTab(1);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(MaxbotixStats_av.count());        printTab(1); 
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_min.minimum());             printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_max.maximum());             printTab(1);
