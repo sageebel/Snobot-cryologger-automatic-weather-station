@@ -3,7 +3,7 @@ void configureIridium()
 {
   modem.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE); // Assume battery power (USB power: IridiumSBD::USB_POWER_PROFILE)
   modem.adjustSendReceiveTimeout(iridiumTimeout);           // Timeout for Iridium send/receive commands (default = 300 s)
-  modem.adjustStartupTimeout(iridiumStartup);               // Timeout for Iridium startup (default = 240 s)
+  modem.adjustStartupTimeout(120);                          // Timeout for Iridium startup (default = 240 s)
 }
 
 // Write data from structure to transmit buffer
@@ -73,7 +73,7 @@ void transmitData()
       if (returnCode == ISBD_SUCCESS)
       {
         DEBUG_PRINTLN("Info - MO-SBD message transmission successful!");
-        blinkLed(PIN_LED_GREEN, 20, 500);
+        blinkLed(PIN_LED_GREEN, 10, 250);
 
         failureCounter = 0; // Clear failed transmission counter
         retransmitCounter = 0; // Clear message retransmit counter
@@ -102,7 +102,7 @@ void transmitData()
             printMtSbd(); // Print MT-SBD message stored in union/structure
 
             // Check if MT-SBD message data is valid and update variables
-            if ((mtSbdMessage.sampleInterval    >= 1  &&  mtSbdMessage.sampleInterval   <= 60)  &&
+            if ((mtSbdMessage.sampleInterval    >= 1  &&  mtSbdMessage.sampleInterval   <= 10080)  &&
                 (mtSbdMessage.averageInterval   >= 1  &&  mtSbdMessage.averageInterval  <= 24)  &&
                 (mtSbdMessage.transmitInterval  >= 1  &&  mtSbdMessage.transmitInterval <= 24)  &&
                 (mtSbdMessage.retransmitLimit   >= 0  &&  mtSbdMessage.retransmitLimit  <= 24)  &&
@@ -133,7 +133,7 @@ void transmitData()
       {
         DEBUG_PRINT("Warning - Transmission failed with error code ");
         DEBUG_PRINTLN(returnCode);
-        blinkLed(PIN_LED_RED, 10, 500);
+        blinkLed(PIN_LED_RED, 10, 250);
       }
     }
 
@@ -226,3 +226,20 @@ void ISBDDiagsCallback(IridiumSBD * device, char c)
   DEBUG_WRITE(c);
 #endif
 }
+
+/*
+// Required for RockBLOCK v3.F only! Controls inverted logic of on/off pin
+void IridiumSBD::setSleepPin(uint8_t enable)
+{
+   if (enable == HIGH)
+  {
+      digitalWrite(this->sleepPin, LOW);  // LOW = awake. Inverted by N-MOSFET
+      diagprint(F("AWAKE\r\n"));
+   }
+   else
+   {
+      digitalWrite(this->sleepPin, HIGH); // HIGH = asleep. Inverted by N-MOSFET
+      diagprint(F("ASLEEP\r\n"));
+   }
+}
+*/

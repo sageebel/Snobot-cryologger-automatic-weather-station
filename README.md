@@ -5,7 +5,7 @@
 </p>
 
 # Cryologger - Automatic Weather Station (AWS)
-![Image](https://github.com/adamgarbo/Cryologger_Automatic_Weather_Station/blob/main/Images/DSC_1877.JPG)
+![Image](https://user-images.githubusercontent.com/22924092/221362172-0b745dd7-2e42-4ac3-a1aa-66db8dc36bda.JPG)
 
 ## Background
 Polar environments are undergoing rapid environmental change, yet there is a lack of high spatial and temporal monitoring data available in these remote regions. Reliance on expensive and proprietary commercial data acquisition and telemetry systems can inhibit both researchers and citizen scientists and present a significant barrier to the establishment of widespread monitoring networks. 
@@ -18,7 +18,7 @@ The goal of this project is to determine if the Cryologger, an open-source datal
 ## Design
 The Cryologger design is based on the open-source Arduino platform (www.arduino.cc) and built using easy-to-use, do-it-yourself electronics. Code was written using the open-source Arduino integrated development environment (IDE) and compiled from community generated libraries. Programming logic is highly focused on power optimization.
 
-<img width="720" alt="image" src="https://user-images.githubusercontent.com/22924092/177602858-616b47ef-bbc0-4e06-b53c-eee3825a787f.png">
+<img width="720" alt="image" src="https://user-images.githubusercontent.com/22924092/224180959-e6673df1-275e-406b-9564-ec4f626f1293.png">
 
 ### Bill of Materials
 

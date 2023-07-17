@@ -59,8 +59,8 @@ void createLogFile()
 #if LOGGING
 
   // Get timestamp log file name
-  sprintf(logFileName, "AWS_%d_20%02d%02d%02d_%02d%02d%02d.csv",
-          CRYOLOGGER_ID, rtc.getYear(), rtc.getMonth(), rtc.getDay(),
+  sprintf(logFileName, "AWS_%s_20%02d%02d%02d_%02d%02d%02d.csv",
+          UID, rtc.getYear(), rtc.getMonth(), rtc.getDay(),
           rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
 
   DEBUG_PRINT("Info - Log file name: "); DEBUG_PRINTLN(logFileName);
@@ -88,8 +88,6 @@ void createLogFile()
     DEBUG_PRINTLN(F("Unable to open file"));
   }
 
-  // Read RTC date and time
-
   // Update file create timestamp
   updateFileCreate(&logFile);
 
@@ -102,6 +100,9 @@ void createLogFile()
                   "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx,"
                   "timer_iridium,transmit_status,rtc_drift,free_ram,"
                   "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
+
+  // Unused: timer_hmp60,timer_5103l
+
 
   // Close log file
   logFile.close();
@@ -217,7 +218,7 @@ void logData()
       logFile.print(transmitInterval);    logFile.print(",");
       logFile.print(retransmitLimit);     logFile.print(",");
       logFile.print(gnssTimeout);         logFile.print(",");
-      logFile.println(iridiumTimeout);      
+      logFile.println(iridiumTimeout);
 
       // Update file access timestamps
       updateFileAccess(&logFile);
@@ -288,7 +289,7 @@ void logData()
       // Debugging information
       DEBUG_PRINT(transmitStatus);      DEBUG_PRINT(",");
       DEBUG_PRINT(rtcDrift);            DEBUG_PRINT(",");
-      DEBUG_PRINT(freeRam());
+      DEBUG_PRINT(freeRam());           DEBUG_PRINT(",");
 
       // Sampling information
       DEBUG_PRINT(sampleInterval);      DEBUG_PRINT(",");

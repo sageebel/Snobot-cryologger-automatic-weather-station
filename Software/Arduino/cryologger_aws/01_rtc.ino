@@ -18,9 +18,9 @@ void configureRtc()
  // rtc.setDate(day, month, year);
   //rtc.setEpoch();
 
-  rtc.setTime(10, 24, 00); // Must be in the form: rtc.setTime(11, 04, 30);
-  rtc.setDate(18, 04, 23);
-  
+  //rtc.setTime(22, 55, 0); // Must be in the form: rtc.setTime(11, 04, 30);
+  //rtc.setDate(27, 1, 23);
+
   // Set initial RTC alarm time
   rtc.setAlarmTime(0, sampleInterval, 0); // hours, minutes, seconds
 

@@ -89,6 +89,8 @@ void readBme280()
   //DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
   //DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
 
+  DEBUG_PRINTLN("done.");
+
   // Re-enable I2C bus
   Wire.begin();
 
@@ -134,7 +136,7 @@ void readLsm303()
     myDelay(500);
 
     float xAvg = 0, yAvg = 0, zAvg = 0;
-   
+
     // Read accelerometer data
     sensors_event_t accel;
 
@@ -155,6 +157,12 @@ void readLsm303()
 
     // Calculate pitch and roll
     // Note: X-axis and Z axis swapped due to orientation of sensor when installed
+
+    // Standard orientation (e.g., Igloolik)
+    //pitch = atan2(-zAvg, sqrt(yAvg * yAvg + xAvg * xAvg)) * 180 / PI;
+    //roll = atan2(yAvg, xAvg) * 180 / PI;
+
+    // Rotated 90° orientation (e.g., Purple Valley)
     pitch = atan2(-zAvg, sqrt(yAvg * yAvg + xAvg * xAvg)) * 180 / PI;
     roll = atan2(yAvg, xAvg) * 180 / PI;
 
@@ -334,8 +342,8 @@ void readSp212_2()
   float sensorValue2 = analogRead(PIN_WIND_DIR); // Read analog wind direction value
 
   // Map wind speed and direction analogue values to
-  windSpeed = mapFloat(sensorValue1, 745, 3684, 0, 100); // 0-100 m/s range
-  windDirection = mapFloat(sensorValue2, 745, 3684, 0, 360); // 0-360 range
+  windSpeed = mapFloat(sensorValue1, 745, 3724, 0, 100); // 0-100 m/s range
+  windDirection = mapFloat(sensorValue2, 745, 3724, 0, 360); // 0-360 range
 
   DEBUG_PRINTLN("done.");
 
@@ -391,7 +399,7 @@ void readSp212_2()
 {
   uint32_t loopStartTime = millis();
 
-  DEBUG_PRINTLN("Info - Reading 7911...");
+  DEBUG_PRINT("Info - Reading 7911...");
 
   // Enable pull-ups
   pinMode(PIN_WIND_SPEED, INPUT_PULLUP);
@@ -419,16 +427,10 @@ void readSp212_2()
   windSpeed = revolutions * (2.25 / 3);   // Calculate wind speed in miles per hour
   windSpeed *= 0.44704;                   // Convert wind speed to metres per second
 
-  // Enable power
-  digitalWrite(PIN_SENSOR_PWR, HIGH);
-
   // Measure wind direction
   (void)analogRead(PIN_WIND_DIR);
   windDirection = analogRead(PIN_WIND_DIR); // Raw analog wind direction value
   windDirection = map(windDirection, 0, 4095, 0, 359); // Map wind direction to degrees (0-360°)
-
-  // Disable power
-  digitalWrite(PIN_SENSOR_PWR, LOW);
 
   // Correct for negative wind direction values
   if (windDirection > 360)
@@ -438,7 +440,7 @@ void readSp212_2()
 
   if (windSpeed == 0)
   {
-    windDirection = 0.0;
+    // windDirection = 0.0; // Comment 2023-06-30: Perhaps not best practice?
   }
 
   // Check and update wind gust speed and direction
@@ -463,6 +465,8 @@ void readSp212_2()
   uStats.add(u);
   vStats.add(v);
 
+  DEBUG_PRINTLN("done.");
+
   // Print debug info
   //DEBUG_PRINT(F("Wind Speed: ")); DEBUG_PRINTLN(windSpeed);
   //DEBUG_PRINT(F("Wind Direction: ")); DEBUG_PRINTLN(windDirection);
@@ -471,8 +475,8 @@ void readSp212_2()
   timer.read7911 = millis() - loopStartTime;
 }
 
-// Interrupt service routine (ISR) for wind speed measurement
-// for Davis Instruments 7911 anemometer
+// Interrupt service routine (ISR) for Davis Instruments 7911 anemometer
+// wind speed measurement
 void windSpeedIsr()
 {
   revolutions++;
@@ -573,6 +577,9 @@ void readMxBtx() {
   digitalWrite(PIN_MB_sleep, HIGH);
   delay(100);
 
+  // Start loop timer
+  unsigned int loopStartTime = millis();
+
    DEBUG_PRINT("Info - Reading MaxBotix...");
   
   // Create a temporary Statistic array to hold the maxbotix measurements
@@ -638,6 +645,9 @@ void readMxBtx() {
 
   // Clear local array
   Maxbotix.clear();
+
+   // Stop loop timer
+  timer.readMxBtx = millis() - loopStartTime;
 
   DEBUG_PRINTLN("done.");
 

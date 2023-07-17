@@ -31,21 +31,23 @@
 
     Code Integrates work done by Adam Garbo and Chris Cosgrove 
 
+  Comments:
+  - Sketch uses 102824 bytes (39%) of program storage space.
 */
 
 // ----------------------------------------------------------------------------
 // Libraries
 // ----------------------------------------------------------------------------
 #include <Adafruit_BME280.h>        // https://github.com/adafruit/Adafruit_BME280 (v2.2.2)
-#include <Adafruit_LSM303_Accel.h>  // https://github.com/adafruit/Adafruit_LSM303_Accel (v1.1.4)
-#include <Adafruit_Sensor.h>        // https://github.com/adafruit/Adafruit_Sensor (v1.1.4)
+#include <Adafruit_LSM303_Accel.h>  // https://github.com/adafruit/Adafruit_LSM303_Accel (v1.1.6)
+#include <Adafruit_Sensor.h>        // https://github.com/adafruit/Adafruit_Sensor (v1.1.9)
 #include <Arduino.h>                // Required for new Serial instance. Include before <wiring_private.h>
 #include <ArduinoLowPower.h>        // https://github.com/arduino-libraries/ArduinoLowPower (v1.2.2)
-#include <IridiumSBD.h>             // https://github.com/sparkfun/SparkFun_IridiumSBD_I2C_Arduino_Library (v3.0.5)
+#include <IridiumSBD.h>             // https://github.com/sparkfun/SparkFun_IridiumSBD_I2C_Arduino_Library (v3.0.6)
 #include <RTCZero.h>                // https://github.com/arduino-libraries/RTCZero (v1.6.0)
-#include <SdFat.h>                  // https://github.com/greiman/SdFat (v2.1.2)
+#include <SdFat.h>                  // https://github.com/greiman/SdFat (v2.2.2)
 #include <sensirion.h>              // https://github.com/HydroSense/sensirion
-#include <Statistic.h>              // https://github.com/RobTillaart/Statistic (v1.0.0)
+#include <Statistic.h>              // https://github.com/RobTillaart/Statistic (v1.0.4)
 #include <TimeLib.h>                // https://github.com/PaulStoffregen/Time (v1.6.1)
 #include <TinyGPS++.h>              // https://github.com/mikalhart/TinyGPSPlus (v1.0.3)
 #include <Wire.h>                   // https://www.arduino.cc/en/Reference/Wire
@@ -55,7 +57,7 @@
 // ----------------------------------------------------------------------------
 // Define unique identifier
 // ----------------------------------------------------------------------------
-#define CRYOLOGGER_ID 1
+#define UID "TST"
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -71,8 +73,8 @@
 // Debugging macros
 // ----------------------------------------------------------------------------
 #define DEBUG           true   // Output debug messages to Serial Monitor
-#define DEBUG_GNSS      true  // Output GNSS debug information
-#define DEBUG_IRIDIUM   false  // Output Iridium debug messages to Serial Monitor
+#define DEBUG_GNSS      true   // Output GNSS debug information
+#define DEBUG_IRIDIUM   true   // Output Iridium debug messages to Serial Monitor
 #define CALIBRATE       false  // Enable sensor calibration code
 
 #if DEBUG
@@ -181,19 +183,19 @@ Statistic MaxbotixStats_max;    // Maxbotix max distances
 Statistic MaxbotixStats_min;    // Maxbotix min distances
 Statistic MaxbotixStats_nan;    // Maxbotix nan samples
 
+
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
 // ----------------------------------------------------------------------------
 unsigned long sampleInterval    = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
 unsigned int  averageInterval   = 12;     // Number of samples to be averaged in each message. Default: 12 (hourly)
 unsigned int  transmitInterval  = 1;      // Number of messages in each Iridium transmission (340-byte limit)
-unsigned int  retransmitLimit   = 2;      // Failed data transmission reattempts (340-byte limit)
-unsigned int  gnssTimeout       = 5;    // Timeout for GNSS signal acquisition (seconds)
-unsigned int  iridiumTimeout    = 5;    // Timeout for Iridium transmission (seconds)
-unsigned int  iridiumStartup    = 5;      // Timeout for Iridium startup (seconds)
+unsigned int  retransmitLimit   = 4;      // Failed data transmission reattempts (340-byte limit)
+unsigned int  gnssTimeout       = 120;    // Timeout for GNSS signal acquisition (seconds)
+unsigned int  iridiumTimeout    = 180;    // Timeout for Iridium transmission (seconds)
 bool          firstTimeFlag     = true;   // Flag to determine if program is running for the first time
 float         batteryCutoff     = 0.0;    // Battery voltage cutoff threshold (V)
-byte          loggingMode       = 1;      // Flag for new log file creation. 1: daily, 2: monthly, 3: yearly
+byte          loggingMode       = 2;      // Flag for new log file creation. 1: daily, 2: monthly, 3: yearly
 
 // ----------------------------------------------------------------------------
 // Global variable declarations
@@ -211,13 +213,18 @@ char          logFileName[30]   = "";     // Log file name
 char          dateTime[30]      = "";     // Datetime buffer
 byte          retransmitCounter = 0;      // Counter for Iridium 9603 transmission reattempts
 byte          transmitCounter   = 0;      // Counter for Iridium 9603 transmission intervals
-byte          currentLogFile    = 0;      // Counter for tracking when new microSD log files are created
-byte          newLogFile        = 0;      // Counter for tracking when new microSD log files are created
+byte          currentLogFile    = 0;      // Variable for tracking when new microSD log files are created
+byte          newLogFile        = 0;      // Variable for tracking when new microSD log files are created
 byte          currentDate       = 0;      // Variable for tracking when the date changes
 byte          newDate           = 0;      // Variable for tracking when the date changes
 int           transmitStatus    = 0;      // Iridium transmission status code
 unsigned int  iterationCounter  = 0;      // Counter for program iterations (zero indicates a reset)
 unsigned int  failureCounter    = 0;      // Counter of consecutive failed Iridium transmission attempts
+unsigned int  snowDepthAvg      = 0;      // Average distance from Maxbotix sensor to surface (mm)
+unsigned int  snowDepthStd      = 0;      // Standard deviation distance from Maxbotix sensor to surface (mm)
+unsigned int  snowDepthMax      = 0;      // Max distance from Maxbotix sensor to surface (mm)
+unsigned int  snowDepthMin      = 0;      // Min distance from Maxbotix sensor to surface (mm)
+unsigned int  snowDepthNan      = 0;      // Number of NaN readings in Maxbotix
 unsigned long previousMillis    = 0;      // Global millis() timer
 unsigned long alarmTime         = 0;      // Global epoch alarm time variable
 unsigned long unixtime          = 0;      // Global epoch time variable
@@ -274,25 +281,25 @@ typedef union
     uint16_t  windDirection;      // Mean wind direction (°)        (2 bytes)
     uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
     uint16_t  windGustDirection;  // Wind gust direction (°)        (2 bytes)
-    unsigned int  distMaxbotix_av   = 0;      // Average distance from Maxbotix sensor to surface (mm)
-    unsigned int  distMaxbotix_std  = 0;      // Std distance from Maxbotix sensor to surface (mm)
-    unsigned int  distMaxbotix_max  = 0;      // Max distance from Maxbotix sensor to surface (mm)
-    unsigned int  distMaxbotix_min  = 0;      // Min distance from Maxbotix sensor to surface (mm)
-    unsigned int  distMaxbotix_nan  = 0;      // Number of NaN readings in Maxbotix
+    uint16_t  distMaxbotix_av;    // Average distance from Maxbotix sensor to surface (mm)
+    uint16_t  distMaxbotix_std;   // Std distance from Maxbotix sensor to surface (mm)
+    uint16_t  distMaxbotix_max;   // Max distance from Maxbotix sensor to surface (mm)
+    uint16_t  distMaxbotix_min;   // Min distance from Maxbotix sensor to surface (mm)
+    uint16_t  distMaxbotix_nan;   // Number of NaN readings in Maxbotix
     int32_t   latitude;           // Latitude (DD)                  (4 bytes)   * 1000000
     int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     uint8_t   satellites;         // # of satellites                (1 byte)
     uint16_t  hdop;               // HDOP                           (2 bytes)
-    float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
-    float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
-    float         soilmoist1        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
-    float         soilmoist2        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+    uint16_t  shortwave1;         // Incoming Short Wave Radiation (W/m^2) *100
+    uint16_t  shortwave2;         // Incoming Short Wave Radiation (W/m^2)*100
+    float     soilmoist1 = 0.0;   // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+    float     soilmoist2 = 0.0;   // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
     uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   * 100
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
     uint8_t   transmitStatus;     // Iridium return code            (1 byte)
     uint16_t  iterationCounter;   // Message counter                (2 bytes)
-  } __attribute__((packed));                                    // Total: (33 bytes)
-  uint8_t bytes[33];
+  } __attribute__((packed));                                    // Total: (37 bytes)
+  uint8_t bytes[37];
 } SBD_MO_MESSAGE;
 
 SBD_MO_MESSAGE moSbdMessage;
@@ -302,7 +309,7 @@ typedef union
 {
   struct
   {
-    uint8_t   sampleInterval;     // 2 bytes
+    uint16_t  sampleInterval;     // 2 bytes
     uint8_t   averageInterval;    // 1 byte
     uint8_t   transmitInterval;   // 1 byte
     uint8_t   retransmitLimit;    // 1 byte
@@ -354,11 +361,13 @@ void setup()
   // Pin assignments
   pinMode(PIN_LED_GREEN, OUTPUT);
   pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_SENSOR_PWR, OUTPUT);
+  //pinMode(PIN_SENSOR_PWR, OUTPUT);
   pinMode(PIN_5V_EN, OUTPUT);
   pinMode(PIN_12V_EN, OUTPUT);
   pinMode(PIN_GNSS_EN, OUTPUT);
+  pinMode(PIN_SNOW, INPUT);
   pinMode(PIN_VBAT, INPUT);
+  pinmode(PIN_IRIDIUM_SLEEP,OUTPUT);
   pinMode(PIN_MB_pw, INPUT);          //maxbotix pulse width 
   pinMode(PIN_MB_sleep, OUTPUT);      // max botix slep pin 
   digitalWrite(PIN_LED_GREEN, LOW);   // Disable green LED
@@ -367,6 +376,8 @@ void setup()
   digitalWrite(PIN_5V_EN, HIGH);       // Disable power to Iridium 9603 ~edited 4/18/2023 to test sp-212 sensors (changed to HIGH)
   digitalWrite(PIN_12V_EN, LOW);      // Disable 12V power
   digitalWrite(PIN_GNSS_EN, HIGH);    // Disable power to GNSS
+ digitalWrite(PIN_IRIDIUM_SLEEP, LOW); // RockBLOCK v3.D and below: Disable power to Iridium
+  //digitalWrite(PIN_IRIDIUM_SLEEP, HIGH);  // RockBLOCK v3.F and above: Set N-FET controlling RockBLOCK On/Off pin to HIGH (no voltage)
 
   // Configure analog-to-digital (ADC) converter
   configureAdc();
@@ -377,16 +388,28 @@ void setup()
 
 #if DEBUG
   SERIAL_PORT.begin(115200); // Open serial port at 115200 baud
-  blinkLed(PIN_LED_RED, 4, 500); // Non-blocking delay to allow user to open Serial Monitor
+  blinkLed(PIN_LED_GREEN, 4, 500); // Non-blocking delay to allow user to open Serial Monitor
 #endif
 
   DEBUG_PRINTLN();
   printLine();
-  DEBUG_PRINT("Cryologger - Automatic Weather Station #"); DEBUG_PRINTLN(CRYOLOGGER_ID);
+  DEBUG_PRINT("Cryologger - Automatic Weather Station #"); DEBUG_PRINTLN(UID);
 
   printLine();
 
-  memset(&moSbdMessage, 0, sizeof(moSbdMessage));
+#if CALIBRATE
+  enable5V();   // Enable 5V power
+  enable12V();  // Enable 12V power
+
+  while (true)
+  {
+    petDog(); // Reset WDT
+    //calibrateAdc();
+    read5103L();
+    //readHmp60();
+    myDelay(500);
+  }
+#endif
 
   // Configure devices
   configureRtc();       // Configure real-time clock (RTC)

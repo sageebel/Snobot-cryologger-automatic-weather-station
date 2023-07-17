@@ -7,10 +7,10 @@ void calculateStats()
   moSbdMessage.pressureInt     = (pressureIntStats.average()     - 850) * 100;   // Mean internal pressure (hPa)
   moSbdMessage.temperatureExt  = temperatureExtStats.average()   * 100;          // Mean external temperature (°C)
   moSbdMessage.humidityExt     = humidityExtStats.average()      * 100;          // Mean external humidity (%)
-  moSbdMessage.shortwave1       = shortwave1Stats.average()        ;           // Mean solar irradiance (W m-2)
-  moSbdMessage.shortwave2       = shortwave2Stats.average()        ;           // Mean solar irradiance (W m-2)
-  moSbdMessage.distMaxbotix_av  = MaxbotixStats_av.average()       ;           // distance (mm)
-  moSbdMessage.voltage          = batteryStats.average()          * 100;          // Mean battery voltage (V)
+  moSbdMessage.shortwave1      = shortwave1Stats.average()       * 10  ;         // Mean solar irradiance (W m-2)
+  moSbdMessage.shortwave2      = shortwave2Stats.average()       * 10  ;         // Mean solar irradiance (W m-2)
+  moSbdMessage.distMaxbotix_av = MaxbotixStats_av.average();                     // distance (mm)
+  moSbdMessage.voltage         = batteryStats.average()          * 100;          // Mean battery voltage (V)
 
   // Calculate mean wind speed and direction vectors
   // windVectors();
@@ -35,6 +35,12 @@ void clearStats()
   shortwave2Stats.clear();
   MaxbotixStats_av.clear();
   humidityExtStats.clear();
+  solarStats.clear();
+  snowStatsAvg.clear();
+  snowStatsStd.clear();
+  snowStatsMax.clear();
+  snowStatsMin.clear();
+  snowStatsNan.clear();
   windSpeedStats.clear();
   uStats.clear();
   vStats.clear();
@@ -99,10 +105,9 @@ void printStats()
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(soilmoist2Stats.average());
   DEBUG_PRINT(F("Max Botix"));                                                  printTab(1);   // why 2 here
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(MaxbotixStats_av.count());        printTab(1); 
-  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_min.minimum());             printTab(1);
-  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_max.maximum());             printTab(1);
-  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(MaxbotixStats_av.average());            printTab(1);
-  DEBUG_PRINT(F("NAN count: "));  DEBUG_PRINTLN(MaxbotixStats_nan.count());            
+  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_av.minimum());             printTab(1);
+  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_av.maximum());             printTab(1);
+  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(MaxbotixStats_av.average());            printTab(1);            
   DEBUG_PRINT(F("Wind speed"));   printTab(1);
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(windSpeedStats.count());          printTab(1);
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(windSpeedStats.minimum());        printTab(1);
