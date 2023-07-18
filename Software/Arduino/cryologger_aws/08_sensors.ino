@@ -86,8 +86,8 @@ void readBme280()
   humidityExtStats.add(humidityExt);
 
   // Print debug info
-  //DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
-  //DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
+  DEBUG_PRINT("Temperature: "); DEBUG_PRINT(temperatureExt); DEBUG_PRINTLN(" C");
+  DEBUG_PRINT("Humidity: "); DEBUG_PRINT(humidityExt); DEBUG_PRINTLN("%");
 
   DEBUG_PRINTLN("done.");
 
@@ -266,10 +266,12 @@ void readSp212_1()
   float sensorValue = analogRead(PIN_SP212_1); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  shortwave1 = mapFloat(sensorValue, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this is not working in testing need to troubleshoot 
+
+  float shortwave1 = mapFloat(sensorValue, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this is not working in testing need to troubleshoot 
 
   // Calculate measured voltages
   //float shortwave1 = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
+    float voltage = sensorValue * (3.3 / 4095.0);
 
   DEBUG_PRINTLN("done.");
 
@@ -292,13 +294,15 @@ void readSp212_2()
 
   // Perform analog readings
   //(void)analogRead(PIN_SP212_2);
+
   float sensorValue2 = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  shortwave2 = mapFloat(sensorValue2, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this inst working need to troubleshoot 
+  float shortwave2 = mapFloat(sensorValue2, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this inst working need to troubleshoot 
 
   // Calculate measured voltages
  // float shortwave2 = sensorValue2 * (0.8);
+   float voltage = sensorValue * (3.3 / 4095.0);
 
   DEBUG_PRINTLN("done.");
 
