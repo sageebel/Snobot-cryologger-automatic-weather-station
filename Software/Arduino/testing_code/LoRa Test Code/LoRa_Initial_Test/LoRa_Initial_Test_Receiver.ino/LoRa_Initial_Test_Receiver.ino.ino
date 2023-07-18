@@ -1,22 +1,22 @@
-// Transmitter Example Code 
+//LoRa Reciever Test Code 
 
-// Feather9x_TX
+// Feather9x_RX
 // -*- mode: C++ -*-
-// Example sketch showing how to create a simple messaging client (transmitter)
+// Example sketch showing how to create a simple messaging client (receiver)
 // with the RH_RF95 class. RH_RF95 class does not provide for addressing or
 // reliability, so you should only use RH_RF95 if you do not need the higher
 // level messaging abilities.
-// It is designed to work with the other example Feather9x_RX
+// It is designed to work with the other example Feather9x_TX
 
 #include <SPI.h>
 #include <RH_RF95.h>
 
-// First 3 here are boards w/radio BUILT-IN. Boards using FeatherWing follow.
 
 // Feather M0:
 #define RFM95_CS   10
 #define RFM95_RST  11
 #define RFM95_INT  12
+
 
 
 // Change to 434.0 or other frequency, must match RX's freq!
@@ -26,6 +26,7 @@
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
 
@@ -33,7 +34,7 @@ void setup() {
   while (!Serial) delay(1);
   delay(100);
 
-  Serial.println("Feather LoRa TX Test!");
+  Serial.println("Feather LoRa RX Test!");
 
   // manual reset
   digitalWrite(RFM95_RST, LOW);
@@ -63,41 +64,28 @@ void setup() {
   rf95.setTxPower(23, false);
 }
 
-int16_t packetnum = 0;  // packet counter, we increment per xmission
-
 void loop() {
-  delay(1000); // Wait 1 second between transmits, could also 'sleep' here!
-  Serial.println("Transmitting..."); // Send a message to rf95_server
+  if (rf95.available()) {
+    // Should be a message for us now
+    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t len = sizeof(buf);
 
-  char radiopacket[20] = "Hello World #      ";
-  itoa(packetnum++, radiopacket+13, 10);
-  Serial.print("Sending "); Serial.println(radiopacket);
-  radiopacket[19] = 0;
-
-  Serial.println("Sending...");
-  delay(10);
-  rf95.send((uint8_t *)radiopacket, 20);
-
-  Serial.println("Waiting for packet to complete...");
-  delay(10);
-  rf95.waitPacketSent();
-  // Now wait for a reply
-  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
-  uint8_t len = sizeof(buf);
-
-  Serial.println("Waiting for reply...");
-  if (rf95.waitAvailableTimeout(1000)) {
-    // Should be a reply message for us now
     if (rf95.recv(buf, &len)) {
-      Serial.print("Got reply: ");
+      digitalWrite(LED_BUILTIN, HIGH);
+      RH_RF95::printBuffer("Received: ", buf, len);
+      Serial.print("Got: ");
       Serial.println((char*)buf);
-      Serial.print("RSSI: ");
+       Serial.print("RSSI: ");
       Serial.println(rf95.lastRssi(), DEC);
+
+      // Send a reply
+      uint8_t data[] = "And hello back to you";
+      rf95.send(data, sizeof(data));
+      rf95.waitPacketSent();
+      Serial.println("Sent a reply");
+      digitalWrite(LED_BUILTIN, LOW);
     } else {
       Serial.println("Receive failed");
     }
-  } else {
-    Serial.println("No reply, is there a listener around?");
   }
-
 }

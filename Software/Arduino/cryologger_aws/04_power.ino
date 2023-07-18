@@ -76,6 +76,7 @@ void disable5V()
   digitalWrite(PIN_5V_EN, LOW);
 }
 
+/*
 // Enable 12 V power
 void enable12V()
 {
@@ -83,11 +84,13 @@ void enable12V()
   myDelay(500);
 }
 
+
 // Disable 12 V power
 void disable12V()
 {
   digitalWrite(PIN_12V_EN, LOW);
 }
+*/
 
 // Prepare system for sleep
 void prepareForSleep()

@@ -35,12 +35,12 @@ void clearStats()
   shortwave2Stats.clear();
   MaxbotixStats_av.clear();
   humidityExtStats.clear();
-  solarStats.clear();
-  snowStatsAvg.clear();
-  snowStatsStd.clear();
-  snowStatsMax.clear();
-  snowStatsMin.clear();
-  snowStatsNan.clear();
+  //solarStats.clear();
+  //snowStatsAvg.clear();
+  //snowStatsStd.clear();
+  //snowStatsMax.clear();
+  //snowStatsMin.clear();
+  //snowStatsNan.clear();
   windSpeedStats.clear();
   uStats.clear();
   vStats.clear();

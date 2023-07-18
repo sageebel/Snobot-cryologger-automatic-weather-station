@@ -77,7 +77,7 @@
 #define DEBUG           true   // Output debug messages to Serial Monitor
 #define DEBUG_GNSS      true   // Output GNSS debug information
 #define DEBUG_IRIDIUM   true   // Output Iridium debug messages to Serial Monitor
-#define CALIBRATE       false  // Enable sensor calibration code
+#define CALIBRATE       true  // Enable sensor calibration code
 
 #if DEBUG
 #define DEBUG_PRINT(x)            SERIAL_PORT.print(x)
@@ -119,8 +119,8 @@
 
 // Unused
 
-//#define PIN_SOLAR           7
-//#define PIN_SENSOR_PWR      7
+#define PIN_SOLAR           7   // Spare
+#define PIN_SENSOR_PWR      7   // Spare
 #define PIN_RFM95_CS        10  // LoRa "B"
 #define PIN_RFM95_RST       11  // LoRa "A"
 #define PIN_RFM95_INT       6   // LoRa "D"
@@ -291,10 +291,10 @@ typedef union
     int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     uint8_t   satellites;         // # of satellites                (1 byte)
     uint16_t  hdop;               // HDOP                           (2 bytes)
-    uint16_t  shortwave1;         // Incoming Short Wave Radiation (W/m^2) *100
-    uint16_t  shortwave2;         // Incoming Short Wave Radiation (W/m^2)*100
-    float     soilmoist1 = 0.0;   // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
-    float     soilmoist2 = 0.0;   // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+    float     shortwave1;         // Incoming Short Wave Radiation (W/m^2) *100
+    float     shortwave2;         // Incoming Short Wave Radiation (W/m^2)*100
+    uint16_t  soilmoist1;         // Soil Moisture 15cm (VWC) ## make sure this is readign correctly : may need to be measured in decimals 
+    uint16_t  soilmoist2;         // Soil Moisture 15cm (VWC) ## 
     uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   * 100
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
     uint8_t   transmitStatus;     // Iridium return code            (1 byte)
@@ -364,18 +364,18 @@ void setup()
   pinMode(PIN_LED_RED, OUTPUT);
   //pinMode(PIN_SENSOR_PWR, OUTPUT);
   pinMode(PIN_5V_EN, OUTPUT);
-  pinMode(PIN_12V_EN, OUTPUT);
+  //pinMode(PIN_12V_EN, OUTPUT);
   pinMode(PIN_GNSS_EN, OUTPUT);
-  pinMode(PIN_SNOW, INPUT);
+  //pinMode(PIN_SNOW, INPUT);
   pinMode(PIN_VBAT, INPUT);
-  pinmode(PIN_IRIDIUM_SLEEP,OUTPUT);
+  pinMode(PIN_IRIDIUM_SLEEP,OUTPUT);
   pinMode(PIN_MB_pw, INPUT);          //maxbotix pulse width 
   pinMode(PIN_MB_sleep, OUTPUT);      // max botix slep pin 
   digitalWrite(PIN_LED_GREEN, LOW);   // Disable green LED
   digitalWrite(PIN_LED_RED, LOW);     // Disable red LED
   digitalWrite(PIN_SENSOR_PWR, LOW);  // Disable power to 3.3V
   digitalWrite(PIN_5V_EN, HIGH);       // Disable power to Iridium 9603 ~edited 4/18/2023 to test sp-212 sensors (changed to HIGH)
-  digitalWrite(PIN_12V_EN, LOW);      // Disable 12V power
+  //digitalWrite(PIN_12V_EN, LOW);      // Disable 12V power
   digitalWrite(PIN_GNSS_EN, HIGH);    // Disable power to GNSS
  digitalWrite(PIN_IRIDIUM_SLEEP, LOW); // RockBLOCK v3.D and below: Disable power to Iridium
   //digitalWrite(PIN_IRIDIUM_SLEEP, HIGH);  // RockBLOCK v3.F and above: Set N-FET controlling RockBLOCK On/Off pin to HIGH (no voltage)
@@ -400,7 +400,7 @@ void setup()
 
 #if CALIBRATE
   enable5V();   // Enable 5V power
-  enable12V();  // Enable 12V power
+  //enable12V();  // Enable 12V power
 
   while (true)
   {
@@ -530,7 +530,7 @@ void loop()
       //read7911();       // Read anemometer
       // readHmp60();      // Read temperature/relative humidity sensor
       readMxBtx();      // Read Max Botix 
-      // read5103L();      // Read anemometer
+      read5103L();      // Read anemometer
       // disable12V();     // Disable 12V power
       disable5V();      // Disable 5V power
 
