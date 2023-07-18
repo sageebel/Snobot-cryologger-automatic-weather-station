@@ -563,9 +563,9 @@ DEBUG_PRINTLN("Done.");
 // Colour    Pin    Description             Notes
 // --------------------------------------------------
 // White          Temperature Sensor      Not connected
-// Orange   11    Pulse Width Output      Pulse width in 
+// Orange   5    Pulse Width Output      Pulse width in 
 // Brown          Analog Voltage Output   Analog In (not connected)
-// Green    12    Ranging Start/Stop      Not connected
+// Green    9    Ranging Start/Stop      Not connected
 // Blue           Serial Output           Not connected
 // Red      5V    Vcc                     5V
 // Black    GND   GND                     GND

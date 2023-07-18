@@ -1,13 +1,14 @@
 /*
     Title:                Snobots 
-    Date:                 April 17, 2023
+    Date:                 July 17, 2023
     Author:               Adam Garbo 
     Modifications By:     Sage Ebel 
-    Version:              0.1.a
+    Version:              0.1.b
    
 
     Description:
     - Code configured for snobots to be deployed in Breitenbush Watershed.
+    - This update adds LoRa 
 
     Components:
     - Rock7 RockBLOCK 9603
@@ -53,6 +54,7 @@
 #include <Wire.h>                   // https://www.arduino.cc/en/Reference/Wire
 #include <wiring_private.h>         // Required for creating new Serial instance
 #include "Adafruit_SHT31.h"         //for external temp sensor
+#include <RH_RF95.h>                // for LoRa http://www.airspayce.com/mikem/arduino/RadioHead/
 
 // ----------------------------------------------------------------------------
 // Define unique identifier
@@ -102,27 +104,26 @@
 #define PIN_VBAT            A0
 #define PIN_SP212_1         A1  // Apogee Pyranometer 1 (upward)
 #define PIN_SP212_2         A2  // Apogee Pyranometer 2 (downward)
-// #define PIN_SOIL_1          A3  // TEROS 10 1 (15 cm)
+#define PIN_SOIL_1          A3  // TEROS 10 1 (15 cm)
 #define PIN_SOIL_2          A4  // TEROS 10 2 (30cm)
 #define PIN_GNSS_EN         A5  
 #define PIN_MICROSD_CS      4   //SD Card
-#define PIN_12V_EN          5   // 12 V step-up/down regulator
+#define PIN_MB_pw           5   // maxbotix pulse width pin -U2
 #define PIN_5V_EN           6   // 5V step-down regulator
 #define PIN_LED_GREEN       8   // Green LED
+#define PIN_MB_sleep        9   // maxbotix sleep - U1 
 #define PIN_IRIDIUM_RX      10  // Pin 1 RXD (Yellow)
-#define PIN_MB_pw           11  // maxbotix pulse width pin -U2
-#define PIN_MB_sleep        12   // maxbotix sleep - U1 
-#define PIN_IRIDIUM_TX      7  // Pin 6 TXD (Orange)
-#define PIN_IRIDIUM_SLEEP   7  // Pin 7 OnOff (Grey)
+#define PIN_IRIDIUM_TX      11  // Pin 6 TXD (Orange)
+#define PIN_IRIDIUM_SLEEP   12  // Pin 7 OnOff (Grey)
 #define PIN_LED_RED         13
 
 // Unused
 
-#define PIN_SOLAR           7
-#define PIN_SENSOR_PWR      7
-#define PIN_RFM95_CS        7   // LoRa "B"
-#define PIN_RFM95_RST       7   // LoRa "A"
-#define PIN_RFM95_INT       7   // LoRa "D"
+//#define PIN_SOLAR           7
+//#define PIN_SENSOR_PWR      7
+#define PIN_RFM95_CS        10  // LoRa "B"
+#define PIN_RFM95_RST       11  // LoRa "A"
+#define PIN_RFM95_INT       6   // LoRa "D"
 
 
 // ------------------------------------------------------------------------------------------------
