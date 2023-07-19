@@ -23,6 +23,7 @@
 
 #define PIN_SOIL_1   A3
 #define PIN_SOIL_2   A4
+#define PIN_5V_EN    6
 
 void setup()
 {
@@ -38,12 +39,12 @@ void loop()
 {
   (void) analogRead(PIN_SOIL_1);
   (void)analogRead(PIN_SOIL_2);
-  float sensorValue_1 = analogRead(PIN_SOIL_1); // voltage across forks of sensor in mV 
-  float sensorValue_2 = analogRead(PIN_SOIL_2); 
-  float soilmoist1 = 4.824*10^-10 * (sensorValue_1) - 2.278*10^-6 * (sensorValue_1) + 3.898*10^-3 * (sensorValue_1) - 2.154
-  float soilmoist2 = 4.824*10^-10 * (sensorValue_2) - 2.278*10^-6 * (sensorValue_2) + 3.898*10^-3 * (sensorValue_2) - 2.154
+  int sensorValue_1 = analogRead(PIN_SOIL_1); // voltage across forks of sensor in mV 
+  int sensorValue_2 = analogRead(PIN_SOIL_2); 
+  float soilmoist1 = 4.824*pow(10,-10) * (raw_1) - 2.278*pow(10,-6) * (raw_1) + 3.898*pow(10,-3) * (raw_1) - 2.154;
+  float soilmoist2 = 4.824*pow(10,-10) * (raw_2) - 2.278*pow(10,-6) * (raw_2) + 3.898*pow(10,-3) * (raw_2) - 2.154;
 
-  Serial.print(soilmoist1); Serial.print(F(",")); Serial.print(sensorValue_1, 4); Serial.println(F(" mV,"));
-  Serial.print(soilmoist2); Serial.print(F(",")); Serial.print(sensorValue_2, 4); Serial.println(F(" mV,"));
+  Serial.print("Sensor 1: "); Serial.print(soilmoist1); Serial.print(F(" m3/m3,")); Serial.print(raw_1, 4); Serial.print(F(" mV, "));
+  Serial.print("Sensor 2: "); Serial.print(soilmoist2); Serial.print(F(" m3/m3,")); Serial.print(raw_2, 4); Serial.println(F(" mV,"));
   delay(1000);
 }
