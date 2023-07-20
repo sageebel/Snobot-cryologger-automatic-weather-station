@@ -6,7 +6,7 @@ void configureIridium()
   modem.adjustStartupTimeout(120);                          // Timeout for Iridium startup (default = 240 s)
 }
 
-// Write data from structure to transmit buffer
+// Write local data from structure to transmit buffer
 void writeBuffer()
 {
   iterationCounter++; // Increment iteration counter
@@ -23,6 +23,17 @@ void writeBuffer()
 
   // Clear MO-SBD message union/structure
   memset(&moSbdMessage, 0x00, sizeof(moSbdMessage));
+}
+
+//Write Data received from LoRa to RockBLOCK 9603 transmit buffer
+void writeBuffer_rx ()
+{
+  iterationCounter++; // Increment iteration counter
+  moSbdMessage.iterationCounter = iterationCounter; // Write message counter data to union - this will be sum of iterations on base and nodes 
+
+   // Concatenate current incoming LoRa (rx) message with existing message(s) stored in transmit buffer
+  memcpy(moSbdBuffer + (sizeof(rx_message) * (transmitCounter + (retransmitCounter * transmitInterval) - 1)), moSbdMessage.bytes, sizeof(rx_message));
+
 }
 
 // Attempt to transmit data via RockBLOCK 9603

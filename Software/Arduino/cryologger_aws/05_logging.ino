@@ -92,12 +92,10 @@ void createLogFile()
   updateFileCreate(&logFile);
 
   // Write header to file
-  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext,"
-                  //"humidity_ext,pitch,roll,wind_speed,wind_direction,latitude,longitude,satellites,hdop,"
-                  "humidity_ext, pitch, roll, shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan"
+  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext"
+                  "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2"
                   "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
-                  //"timer_readGnss,timer_bme280,timer_lsm303,timer_readHmp60,timer_read5103l,"
-                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx,"
+                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2"
                   "timer_iridium,transmit_status,rtc_drift,free_ram,"
                   "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
 
@@ -170,8 +168,6 @@ void logData()
       logFile.print(pressureInt);         logFile.print(",");
       logFile.print(temperatureExt);      logFile.print(",");
       logFile.print(humidityExt);         logFile.print(",");
-      logFile.print(pitch);               logFile.print(",");
-      logFile.print(roll);                logFile.print(",");
       logFile.print(shortwave1,2);        logFile.print(",");
       logFile.print(shortwave2,2);        logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
@@ -179,13 +175,9 @@ void logData()
       logFile.print(distMaxbotix_max);    logFile.print(","); 
       logFile.print(distMaxbotix_min);    logFile.print(","); 
       logFile.print(distMaxbotix_nan);    logFile.print(","); 
-      //logFile.print(windSpeed);           logFile.print(",");
-      //logFile.print(windDirection);       logFile.print(",");
-      //logFile.print(solar);               logFile.print(",");
-      //logFile.print(latitude, 6);         logFile.print(",");
-      //logFile.print(longitude, 6);        logFile.print(",");
-      //logFile.print(satellites);          logFile.print(",");
-      //logFile.print(hdop);                logFile.print(",");
+      logFile.print(soilmoist1,2);        logFile.print(",");
+      logFile.print(soilmoist2,2);        logFile.print(",");
+
 
       // Online information
       logFile.print(online.microSd);      logFile.print(",");
@@ -199,12 +191,12 @@ void logData()
       logFile.print(timer.readGnss);      logFile.print(",");
       logFile.print(timer.readBme280);    logFile.print(",");
       logFile.print(timer.readLsm303);    logFile.print(",");
-      //logFile.print(timer.readHmp60);     logFile.print(",");
-      //logFile.print(timer.read5103L);     logFile.print(",");
       logFile.print(timer.readsht30);     logFile.print(",");
       logFile.print(timer.readSp212_1);   logFile.print(",");
       logFile.print(timer.readSp212_2);   logFile.print(",");
       logFile.print(timer.readMxBtx);     logFile.print(",");
+      logFile.print(timer.readsoil_1);   logFile.print(",");
+      logFile.print(timer.readsoil_2);   logFile.print(",");
       logFile.print(timer.iridium);       logFile.print(",");
 
       // Debugging information
@@ -259,6 +251,8 @@ void logData()
       DEBUG_PRINT(distMaxbotix_max);    DEBUG_PRINT(","); 
       DEBUG_PRINT(distMaxbotix_min);    DEBUG_PRINT(",");  
       DEBUG_PRINT(distMaxbotix_nan);    DEBUG_PRINT(","); 
+      DEBUG_PRINT(soilmoist1);        DEBUG_PRINT(",");
+      DEBUG_PRINT(soilmoist2);        DEBUG_PRINT(",");
       // DEBUG_PRINT(windSpeed);           DEBUG_PRINT(",");
       // DEBUG_PRINT(windDirection);       DEBUG_PRINT(",");
       //DEBUG_PRINT(solar);               DEBUG_PRINT(",");
@@ -284,6 +278,10 @@ void logData()
        DEBUG_PRINT(timer.readsht30);    DEBUG_PRINT(",");
       DEBUG_PRINT(timer.readSp212_1);   DEBUG_PRINT(",");
       DEBUG_PRINT(timer.readSp212_2);   DEBUG_PRINT(",");
+      DEBUG_PRINT(timer.readMxBtx);     DEBUG_PRINT(",");
+      DEBUG_PRINT(timer.readsoil_1);    DEBUG_PRINT(",");
+      DEBUG_PRINT(timer.readsoil_2);    DEBUG_PRINT(",");
+
       // DEBUG_PRINT(timer.iridium);    DEBUG_PRINT(",");
 
       // Debugging information

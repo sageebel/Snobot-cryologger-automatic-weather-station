@@ -167,8 +167,8 @@ void readLsm303()
     roll = atan2(yAvg, xAvg) * 180 / PI;
 
     // Write data to union
-    moSbdMessage.pitch = pitch * 100;
-    moSbdMessage.roll = roll * 100;
+    //moSbdMessage.pitch = pitch * 100;
+    //moSbdMessage.roll = roll * 100;
 
     // Add to statistics object
     //pitchStats.add();
@@ -241,8 +241,8 @@ void readLsm303()
   // Stop loop timer
   timer.readHmp60 = millis() - loopStartTime;
 }
-*/
 
+*/
 // ----------------------------------------------------------------------------
 // Apogee SP-212 Pyranometer 
 // -----------------------------------------------------
@@ -302,7 +302,7 @@ void readSp212_2()
 
   // Calculate measured voltages
  // float shortwave2 = sensorValue2 * (0.8);
-   float voltage = sensorValue * (3.3 / 4095.0);
+   float voltage = sensorValue2 * (3.3 / 4095.0);
 
   DEBUG_PRINTLN("done.");
 
@@ -566,21 +566,20 @@ DEBUG_PRINTLN("Done.");
 // --------------------------------------------------
 // Colour    Pin    Description             Notes
 // --------------------------------------------------
-// White          Temperature Sensor      Not connected
-// Orange   5    Pulse Width Output      Pulse width in 
-// Brown          Analog Voltage Output   Analog In (not connected)
-// Green    9    Ranging Start/Stop      Not connected
-// Blue           Serial Output           Not connected
-// Red      5V    Vcc                     5V
-// Black    GND   GND                     GND
+// White                Temperature Sensor      Not connected
+// Orange   5(node)     Pulse Width Output      Pulse width in 
+  //Orange  A3(base)    Pulse Width Output      Confirm that we can use this analog port with PWO
+// Brown                Analog Voltage Output   Analog In (not connected)
+// Green    9(node)     Ranging Start/Stop      Sleep
+  //Green      (base)                           Not Connected 
+// Blue                 Serial Output           Not connected
+// Red      5V          Vcc                     5V
+// Black    GND         GND                     GND
 //
 // ----------------------------------------------------------------------------
 // Read Maxbotix distance to surface
 void readMxBtx() {
-  // Wake sensor
-  digitalWrite(PIN_MB_sleep, HIGH);
-  delay(100);
-
+ 
   // Start loop timer
   unsigned int loopStartTime = millis();
 
@@ -647,21 +646,19 @@ void readMxBtx() {
   distMaxbotix_min = z_min;
   distMaxbotix_nan = z_nan;
 
+  // Debugging only
+  DEBUG_PRINT("snowDepthAvg: "); DEBUG_PRINTLN(distMaxbotix_av);
+  DEBUG_PRINT("snowDepthStd: "); DEBUG_PRINTLN(distMaxbotix_std);
+  DEBUG_PRINT("snowDepthMax: "); DEBUG_PRINTLN(distMaxbotix_max);
+  DEBUG_PRINT("snowDepthMin: "); DEBUG_PRINTLN(distMaxbotix_min);
+  DEBUG_PRINT("snowDepthNan: "); DEBUG_PRINTLN(distMaxbotix_nan);
+
+  DEBUG_PRINTLN("done.");
+
   // Clear local array
   Maxbotix.clear();
 
    // Stop loop timer
   timer.readMxBtx = millis() - loopStartTime;
 
-  DEBUG_PRINTLN("done.");
-
-  // Print debug info
-  DEBUG_PRINT(F("Distance: ")); DEBUG_PRINT(z_av); DEBUG_PRINT(F(" mm, Nan Count:")); DEBUG_PRINT(z_nan); DEBUG_PRINTLN(F(","));
-
-
-  
-  // Sleep sensor
-  digitalWrite(PIN_MB_sleep, LOW);
-  delay(100);
-  
 }
