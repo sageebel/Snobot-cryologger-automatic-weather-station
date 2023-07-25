@@ -58,9 +58,9 @@
 #include <RHReliableDatagram.h>     // https://github.com/PaulStoffregen/RadioHead (this is from Chris - confirm if needed for LoRa Operation )
 
 // ----------------------------------------------------------------------------
-// Define unique identifier
+// Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[5] = "sb2";          // must be 3 characters 
+char UID[6] = "s1o";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -70,8 +70,17 @@ char UID[5] = "sb2";          // must be 3 characters
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-#define NODE_STATION   true    // Set if node is just to transmit messages by LoRa
-#define BASE_STATION   false   // Set if RockBlock is installed and you wish to listen for LoRa messages
+#define NODE_STATION   false    // Set if node is just to transmit messages by LoRa
+#define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
+
+// ----------------------------------------------------------------------------
+// User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
+// ----------------------------------------------------------------------------
+char          node_name           = 'h';      // Node group identifier(high = h, mid = m, low = l, north = n)
+unsigned int  node_number         = 1;            // Node number
+unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
+unsigned int  total_nodes         = 3;            // Total nodes in the network (excluding base station) 
+
 // ----------------------------------------------------------------------------
 // Debugging macros
 // ----------------------------------------------------------------------------
@@ -105,14 +114,11 @@ char UID[5] = "sb2";          // must be 3 characters
 #define PIN_VBAT            A0
 #define PIN_SP212_1         A1  // Apogee Pyranometer 1 (upward)
 #define PIN_SP212_2         A2  // Apogee Pyranometer 2 (downward)
-
 #define PIN_GNSS_EN         A5  // GPS and RTK
 #define PIN_MICROSD_CS      4   // SD Card
 #define PIN_5V_EN           6   // 5V step-down regulator
 #define PIN_LED_GREEN       8   // Green LED
-#define PIN_RFM95_CS        10  // LoRa "B"
-#define PIN_RFM95_RST       11  // LoRa "A"
-#define PIN_RFM95_INT       12  // LoRa "D"
+
 #define PIN_LED_RED         13
 
 // Pin defintiions for the Node station will differ slightly from the Base Station to accomodate the iridium
@@ -121,6 +127,9 @@ char UID[5] = "sb2";          // must be 3 characters
   #define PIN_SOIL_1        A3  // TEROS 10 1 (15 cm)
   #define PIN_SOIL_2        A4  // TEROS 10 2 (30cm)
   #define PIN_MB_pw         5   // maxbotix pulse width pin -U2
+  #define PIN_RFM95_CS      10  // LoRa "B"
+  #define PIN_RFM95_RST     11  // LoRa "A"
+  #define PIN_RFM95_INT     12  // LoRa "D"
   #define PIN_IRIDIUM_RX    7   // unused
   #define PIN_IRIDIUM_TX    7   // unused
   #define PIN_IRIDIUM_SLEEP 7   // unused
@@ -128,12 +137,15 @@ char UID[5] = "sb2";          // must be 3 characters
 
 //Base Stations: will not have a shallow soil moisture sensor; will not put maxbotix to sleep 
 #if BASE_STATION 
-  #define PIN_MB_pw         A3  // maxbotix pulse width pin -U2
-  #define PIN_IRIDIUM_RX    5   // Pin 1 RXD (Yellow) 
-  #define PIN_IRIDIUM_TX    A4  // Pin 6 TXD (Orange)
-  #define PIN_IRIDIUM_SLEEP 9   // Pin 7 OnOff (Grey)
   #define PIN_SOIL_1        7  // TEROS 10 1 (15 cm)
   #define PIN_SOIL_2        7  // TEROS 10 2 (30cm)
+  #define PIN_MB_pw         5   // maxbotix pulse width pin -U2
+  #define PIN_RFM95_CS      A3  // LoRa "B"
+  #define PIN_RFM95_RST     A4  // LoRa "A"
+  #define PIN_RFM95_INT     9  // LoRa "D"
+  #define PIN_IRIDIUM_RX    10   // unused
+  #define PIN_IRIDIUM_TX    11   // unused
+  #define PIN_IRIDIUM_SLEEP 12   // unused
   
 #endif
 
@@ -215,11 +227,6 @@ Statistic soilmoist2Stats;      // Soil Moisture (TEROS-10)
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
 // ----------------------------------------------------------------------------
-char          node_name           = 'h';      // Node group identifier(high = h, mid = m, low = l, north = n)
-unsigned int  node_number         = 1;            // Node number
-unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
-unsigned int  total_nodes         = 3;            // Total nodes in the network
-
 unsigned int  listen              = 45;           //Time in seconds to listen for incoming or sending LoRa messages 
 
 unsigned long sampleInterval      = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
