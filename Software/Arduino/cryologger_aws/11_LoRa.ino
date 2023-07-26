@@ -1,5 +1,7 @@
 //LoRa Radio Communication 
 
+
+
 // Set-up to talk to LoRA
 void talkToRadio(){
   digitalWrite(PIN_MICROSD_CS, HIGH); //turn on the SD card pin
@@ -15,15 +17,16 @@ void talkToSD(){
 }
 
 // Send LoRa line
-#if NODE_STATION
+//#if NODE_STATION
   void LoRa_send(){
     unsigned int loopStartTime = millis();
-    
+    uint8_t from;
+
     talkToRadio();
     packetnum++;
     
     #if DEBUG
-    Serial.println("Transmitting via LoRa"); // Send a message to rf95_server
+    DEBUG_PRINTLN("Attempting to Transmit Message to Base via LoRa..."); // Send a message to rf95_server
     #endif
 
     // Send a message to manager_server
@@ -31,63 +34,64 @@ void talkToSD(){
     {
       // Now wait for a reply from the server
       uint8_t len = sizeof(buf);
-      uint8_t from;
+      
       if (manager.recvfromAckTimeout(buf, &len, 4000, &from))
       {
-        Serial.print("got reply from base station :");
-        Serial.print(from, HEX);
-        Serial.print(": ");
-        Serial.println((char*)buf);
+        DEBUG_PRINT("got reply from base station #:");
+        DEBUG_PRINT_HEX(from, HEX);
+        DEBUG_PRINT(": ");
+        DEBUG_PRINTLN((char*)buf);
         loraRxFlag = true;
       }
       else
       {
-        Serial.println("No reply, is the base station running?");
+        DEBUG_PRINTLN("No reply, is the base station running?");
       }
     }
     else
-      Serial.println("sendtoWait failed");
+      DEBUG_PRINTLN("sendtoWait failed");
 
-    Serial.print("RSSI = "); Serial.println(rf95.lastRssi());
+    DEBUG_PRINT("RSSI = "); DEBUG_PRINTLN(rf95.lastRssi());
     
     unsigned int loraLoopTime = millis() - loopStartTime;
     Serial.print("LoRa_send() function execution: "); Serial.print(loraLoopTime); Serial.println(F(" ms"));
   }
-#endif
+//#endif
 
-#if BASE_STATION //listen for LoRa messages and write them to the SD card 
+//#if BASE_STATION //listen for LoRa messages and write them to the SD card 
   // Write received data from LoRa to RockBlock buffer
 
   void LoRa_receive()
   {
     // Volatile boolean for if a message is received
     volatile bool rxFlag = false;
-    
+    uint8_t from;
+
     talkToRadio();
 
     if (manager.available())
     {
       // Wait for a message addressed to us from the client
       uint8_t len = sizeof(buf);
-      uint8_t from;
+      
       if (manager.recvfromAck(buf, &len, &from))
       {
-        Serial.print("Got data from SnowBot #");
-        Serial.print(from, HEX);
-        Serial.print(": ");
-        Serial.println((char*)buf);
+        DEBUG_PRINT("Got data from SnowBot #");
+        DEBUG_PRINT_HEX(from, HEX);
+        DEBUG_PRINT(": ");
+        DEBUG_PRINTLN((char*)buf);
         rxFlag = true; //Set rxFlag to true
         
         // Send a reply back to the originator client
         if (!manager.sendtoWait(rx_reply, sizeof(rx_reply), from))
         {
-            Serial.println("sendtoWait failed");
+            DEBUG_PRINTLN("sendtoWait failed");
             rxFlag = false; //Set rxFlag to false if sendtoWait fails
         }
       }
       else 
       {
-        (Serial.println("Can't find a message"));
+        (DEBUG_PRINTLN("Can't find a message"));
       }
     }
 
@@ -106,10 +110,10 @@ void talkToSD(){
 
       logData(); 
 
-      Serial.print("Logged Data From Snobot #");
-      Serial.print(from, HEX);
-      Serial.print(": ");
-      Serial.println((char*)buf);
+      DEBUG_PRINT("Logged Data From Snobot #");
+      DEBUG_PRINT_HEX(from, HEX);
+      DEBUG_PRINT(": ");
+      DEBUG_PRINTLN((char*)buf);
 
     
     }
@@ -119,4 +123,4 @@ void talkToSD(){
     // Clear rxFlag
     rxFlag = false;
   }
-#endif
+//#endif

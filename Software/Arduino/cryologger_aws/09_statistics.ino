@@ -41,9 +41,9 @@ void clearStats()
   //snowStatsMax.clear();
   //snowStatsMin.clear();
   //snowStatsNan.clear();
-  windSpeedStats.clear();
-  uStats.clear();
-  vStats.clear();
+  //windSpeedStats.clear();
+  //uStats.clear();
+  //vStats.clear();
 }
 
 // Print statistics
@@ -108,21 +108,21 @@ void printStats()
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_av.minimum());             printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_av.maximum());             printTab(1);
   DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(MaxbotixStats_av.average());            printTab(1);            
-  DEBUG_PRINT(F("Wind speed"));   printTab(1);
-  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(windSpeedStats.count());          printTab(1);
-  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(windSpeedStats.minimum());        printTab(1);
-  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(windSpeedStats.maximum());        printTab(1);
-  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(windSpeedStats.average());
-  DEBUG_PRINT(F("vn"));                                                         printTab(2);
-  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(vStats.count());                  printTab(1);
-  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(vStats.minimum());                printTab(1);
-  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(vStats.maximum());                printTab(1);
-  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(vStats.average());
-  DEBUG_PRINT(F("ve"));                                                         printTab(2);
-  DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(uStats.count());                  printTab(1);
-  DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(uStats.minimum());                printTab(1);
-  DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(uStats.maximum());                printTab(1);
-  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(uStats.average());
-  DEBUG_PRINT(F("Wind gust speed: "));      printTab(1);  DEBUG_PRINTLN(windGustSpeed);
-  DEBUG_PRINT(F("Wind gust direction: "));  printTab(1);  DEBUG_PRINTLN(windGustDirection);
+  // DEBUG_PRINT(F("Wind speed"));   printTab(1);
+  // DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(windSpeedStats.count());          printTab(1);
+  // DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(windSpeedStats.minimum());        printTab(1);
+  // DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(windSpeedStats.maximum());        printTab(1);
+  // DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(windSpeedStats.average());
+  // DEBUG_PRINT(F("vn"));                                                         printTab(2);
+  // DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(vStats.count());                  printTab(1);
+  // DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(vStats.minimum());                printTab(1);
+  // DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(vStats.maximum());                printTab(1);
+  // DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(vStats.average());
+  // DEBUG_PRINT(F("ve"));                                                         printTab(2);
+  // DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(uStats.count());                  printTab(1);
+  // DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(uStats.minimum());                printTab(1);
+  // DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(uStats.maximum());                printTab(1);
+  // DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(uStats.average());
+  // DEBUG_PRINT(F("Wind gust speed: "));      printTab(1);  DEBUG_PRINTLN(windGustSpeed);
+  // DEBUG_PRINT(F("Wind gust direction: "));  printTab(1);  DEBUG_PRINTLN(windGustDirection);
 }

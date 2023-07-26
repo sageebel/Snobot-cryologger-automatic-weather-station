@@ -55,12 +55,12 @@
 #include <wiring_private.h>         // Required for creating new Serial instance
 #include "Adafruit_SHT31.h"         //for external temp sensor
 #include <RH_RF95.h>                // for LoRa http://www.airspayce.com/mikem/arduino/RadioHead/
-#include <RHReliableDatagram.h>     // https://github.com/PaulStoffregen/RadioHead (this is from Chris - confirm if needed for LoRa Operation )
+#include <RHReliableDatagram.h>     // https://github.com/PaulStoffregen/RadioHead 
 
 // ----------------------------------------------------------------------------
 // Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[6] = "s1o";          // must be 3 characters 
+char UID[6] = "s1u";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -70,14 +70,14 @@ char UID[6] = "s1o";          // must be 3 characters
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-#define NODE_STATION   false    // Set if node is just to transmit messages by LoRa
-#define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
+#define NODE_STATION   true  // Set if node is just to transmit messages by LoRa
+#define BASE_STATION   false   // Set if RockBlock is installed and you wish to listen for LoRa messages
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
 char          node_name           = 'h';      // Node group identifier(high = h, mid = m, low = l, north = n)
-unsigned int  node_number         = 1;            // Node number
+unsigned int  node_number         = 5;            // Node number
 unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
 unsigned int  total_nodes         = 3;            // Total nodes in the network (excluding base station) 
 
@@ -92,7 +92,7 @@ unsigned int  total_nodes         = 3;            // Total nodes in the network 
 #if DEBUG
 #define DEBUG_PRINT(x)            SERIAL_PORT.print(x)
 #define DEBUG_PRINTLN(x)          SERIAL_PORT.println(x)
-#define DEBUG_PRINT_HEX(x)        SERIAL_PORT.print(x, HEX)
+#define DEBUG_PRINT_HEX(x,HEX)    SERIAL_PORT.print(x, HEX)
 #define DEBUG_PRINTLN_HEX(x)      SERIAL_PORT.println(x, HEX)
 #define DEBUG_PRINT_DEC(x, y)     SERIAL_PORT.print(x, y)
 #define DEBUG_PRINTLN_DEC(x, y)   SERIAL_PORT.println(x, y)
@@ -210,9 +210,9 @@ Statistic humidityIntStats;     // Internal humidity
 Statistic pressureIntStats;     // Internal pressure
 Statistic temperatureExtStats;  // External temperature
 Statistic humidityExtStats;     // External humidity
-Statistic windSpeedStats;       // Wind speed
-Statistic uStats;               // Wind east-west wind vector component (u)
-Statistic vStats;               // Wind north-south wind vector component (v)
+//Statistic windSpeedStats;       // Wind speed
+//Statistic uStats;               // Wind east-west wind vector component (u)
+//Statistic vStats;               // Wind north-south wind vector component (v)
 Statistic shortwave1Stats;       // Incoming short wave radiation (SP-212)
 Statistic shortwave2Stats;       // Outgoing short wave radiation (SP-212)
 Statistic MaxbotixStats_av;     // Maxbotix average distances
@@ -230,7 +230,7 @@ Statistic soilmoist2Stats;      // Soil Moisture (TEROS-10)
 unsigned int  listen              = 45;           //Time in seconds to listen for incoming or sending LoRa messages 
 
 unsigned long sampleInterval      = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
-unsigned int  averageInterval     = 12;     // Number of samples to be averaged in each message. Default: 12 (hourly)
+unsigned int  averageInterval     = 4;     // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 4 for every 15 minutes for testing) 
 unsigned int  transmitInterval    = 1;      // Number of messages in each Iridium transmission (340-byte limit)
 unsigned int  retransmitLimit     = 4;      // Failed data transmission reattempts (340-byte limit)
 unsigned int  gnssTimeout         = 120;    // Timeout for GNSS signal acquisition (seconds)
@@ -325,9 +325,9 @@ uint8_t       len               = sizeof(buf); // LoRa radio buffer length
 volatile bool resFlag           = false;  // LoRa response flag is set to true once response is found
 uint32_t      period            = listen*1000UL; // Set up listening loop
 
-#if BASE_STATION
+
 uint8_t rx_reply[] = "got it";
-#endif
+
 
 // ----------------------------------------------------------------------------
 // Unions/structures 
@@ -352,10 +352,10 @@ typedef union
     // uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
     // uint16_t  windGustDirection;  // Wind gust direction (°)        (2 bytes)
     uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
-    uint16_t  distMaxbotix_std;   // Std dist sensor to surface (mm)(2 bytes)
-    uint16_t  distMaxbotix_max;   // Max dist sensor to surface (mm)(2 bytes)
-    uint16_t  distMaxbotix_min;   // Min dist sensor to surface (mm)(2 bytes)
-    uint16_t  distMaxbotix_nan;   // # ofNaN readings in Maxbotix   (2 bytes)
+   // uint16_t  distMaxbotix_std;   // Std dist sensor to surface (mm)(2 bytes)
+    //uint16_t  distMaxbotix_max;   // Max dist sensor to surface (mm)(2 bytes)
+    //uint16_t  distMaxbotix_min;   // Min dist sensor to surface (mm)(2 bytes)
+    //uint16_t  distMaxbotix_nan;   // # ofNaN readings in Maxbotix   (2 bytes)
     // int32_t   latitude;           // Latitude (DD)                  (4 bytes)   * 1000000
     // int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     // uint8_t   satellites;         // # of satellites                (1 byte)
@@ -368,14 +368,14 @@ typedef union
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
     uint8_t   transmitStatus;     // Iridium return code            (1 byte)
     uint16_t  iterationCounter;   // Message counter                (2 bytes)
-  } __attribute__((packed));                                    // Total: (41 bytes)
-  uint8_t bytes[41];
+  } __attribute__((packed));                                    // Total: (33 bytes)
+  uint8_t bytes[33];
 } SBD_MO_MESSAGE;
 
 SBD_MO_MESSAGE moSbdMessage;      //Iridium Message 
 SBD_MO_MESSAGE tx_message;        //Outgoing LoRa message 
 SBD_MO_MESSAGE rx_message;        //Incoming LoRa message (Base stations only) 
-size_t messageSize = sizeof(tx_message); // size (in bytes) of data to be stored and transmitted - don't think I need this anymore 
+size_t messageSize = sizeof(tx_message); // size (in bytes) of data to be stored and transmitted 
 
 // Union to store received Iridium SBD Mobile Terminated (MT) message
 typedef union
@@ -456,7 +456,7 @@ void setup()
 
 //SETUP LORA - ORGANIZE THIS INTO APPROPRIATE SECTIONS 
 // Test LoRa 
-Serial.println("Feather LoRa RX Test!");
+DEBUG_PRINTLN("Feather LoRa RX Test!");
 
  talkToRadio();
   pinMode(PIN_RFM95_RST, OUTPUT);
@@ -471,20 +471,20 @@ Serial.println("Feather LoRa RX Test!");
 
   
   while (!rf95.init()) {
-    Serial.println("LoRa manager init failed");
+    DEBUG_PRINTLN("LoRa manager init failed");
     while (1);
   }
-  Serial.println("LoRa radio init OK!");
+  DEBUG_PRINTLN("LoRa radio init OK!");
   
   if (!rf95.setFrequency(RF95_FREQ)) {
-    Serial.println("setFrequency failed");
+    DEBUG_PRINTLN("setFrequency failed");
     while (1);
   }
 
 rf95.setTxPower(23, false);
-  Serial.println("Sleeping radio");
+  DEBUG_PRINTLN("Sleeping radio");
   rf95.sleep();
-  Serial.println();
+  DEBUG_PRINTLN();
   packetnum = 0;  // packet counter, we increment per xmission
 
 
@@ -625,6 +625,7 @@ void loop()
     else
     {
       DEBUG_PRINT("Info - Battery voltage good: "); DEBUG_PRINTLN(voltage);
+      DEBUG_PRINTLN("Performing Measurements.");
 
       cutoffCounter = 0;
 
@@ -667,10 +668,10 @@ void loop()
             Serial.print("currentDate: "); Serial.println(currentDate);
             Serial.print("newDate: "); Serial.println(newDate);
           }
-          #if BASE_STATION // Transmit data via Iridium transceiver
-            transmitData(); 
-            Serial.print("Listening for messages for "); Serial.print(listen);
-            Serial.println(" seconds");
+          #if BASE_STATION 
+            
+            DEBUG_PRINT("LoRa listening for messages from Nodes for "); DEBUG_PRINT(listen);
+            DEBUG_PRINTLN(" seconds");
           
             uint32_t tStart = millis();
             uint32_t tEnd = tStart;
@@ -680,16 +681,14 @@ void loop()
              petDog();
              tEnd = millis();
             }
-  
+            
              // Sleep the radio when done
               rf95.sleep();
-        
+
+            transmitData(); // Transmit data via Iridium transceiver
           #endif
 
-          #if DEBUG
-              Serial.println("Pretend transmission!");
-              printMoSbd();
-          #endif
+         
           #if NODE_STATION // Send LoRa data
           
             // Start loop to keep sending data for given period until acknowledgement received

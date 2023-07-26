@@ -171,10 +171,10 @@ void logData()
       logFile.print(shortwave1,2);        logFile.print(",");
       logFile.print(shortwave2,2);        logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
-      logFile.print(distMaxbotix_std);    logFile.print(","); 
-      logFile.print(distMaxbotix_max);    logFile.print(","); 
-      logFile.print(distMaxbotix_min);    logFile.print(","); 
-      logFile.print(distMaxbotix_nan);    logFile.print(","); 
+      //logFile.print(distMaxbotix_std);    logFile.print(","); 
+      //logFile.print(distMaxbotix_max);    logFile.print(","); 
+      //logFile.print(distMaxbotix_min);    logFile.print(","); 
+      //logFile.print(distMaxbotix_nan);    logFile.print(","); 
       logFile.print(soilmoist1,2);        logFile.print(",");
       logFile.print(soilmoist2,2);        logFile.print(",");
 
@@ -247,10 +247,10 @@ void logData()
       DEBUG_PRINT(shortwave1);          DEBUG_PRINT(",");
       DEBUG_PRINT(shortwave2);          DEBUG_PRINT(",");    
       DEBUG_PRINT(distMaxbotix_av);     DEBUG_PRINT(",");  
-      DEBUG_PRINT(distMaxbotix_std);    DEBUG_PRINT(",");  
-      DEBUG_PRINT(distMaxbotix_max);    DEBUG_PRINT(","); 
-      DEBUG_PRINT(distMaxbotix_min);    DEBUG_PRINT(",");  
-      DEBUG_PRINT(distMaxbotix_nan);    DEBUG_PRINT(","); 
+      //DEBUG_PRINT(distMaxbotix_std);    DEBUG_PRINT(",");  
+      //DEBUG_PRINT(distMaxbotix_max);    DEBUG_PRINT(","); 
+      //DEBUG_PRINT(distMaxbotix_min);    DEBUG_PRINT(",");  
+     // DEBUG_PRINT(distMaxbotix_nan);    DEBUG_PRINT(","); 
       DEBUG_PRINT(soilmoist1);        DEBUG_PRINT(",");
       DEBUG_PRINT(soilmoist2);        DEBUG_PRINT(",");
       // DEBUG_PRINT(windSpeed);           DEBUG_PRINT(",");
