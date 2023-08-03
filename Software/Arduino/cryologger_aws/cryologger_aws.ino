@@ -60,7 +60,7 @@
 // ----------------------------------------------------------------------------
 // Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[6] = "s1u";          // must be 3 characters 
+char UID[6] = "s1o";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -70,8 +70,8 @@ char UID[6] = "s1u";          // must be 3 characters
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-#define NODE_STATION   true  // Set if node is just to transmit messages by LoRa
-#define BASE_STATION   false   // Set if RockBlock is installed and you wish to listen for LoRa messages
+#define NODE_STATION   false  // Set if node is just to transmit messages by LoRa
+#define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
@@ -454,39 +454,6 @@ void setup()
     //digitalWrite(PIN_IRIDIUM_SLEEP, HIGH);  // RockBLOCK v3.F and above: Set N-FET controlling RockBLOCK On/Off pin to HIGH (no voltage)
   #endif
 
-//SETUP LORA - ORGANIZE THIS INTO APPROPRIATE SECTIONS 
-// Test LoRa 
-DEBUG_PRINTLN("Feather LoRa RX Test!");
-
- talkToRadio();
-  pinMode(PIN_RFM95_RST, OUTPUT);
-  digitalWrite(PIN_RFM95_RST, HIGH);
-  delay(250);
-
-  // manual reset
-  digitalWrite(PIN_RFM95_RST, LOW);
-  delay(100);
-  digitalWrite(PIN_RFM95_RST, HIGH);
-  delay(500);
-
-  
-  while (!rf95.init()) {
-    DEBUG_PRINTLN("LoRa manager init failed");
-    while (1);
-  }
-  DEBUG_PRINTLN("LoRa radio init OK!");
-  
-  if (!rf95.setFrequency(RF95_FREQ)) {
-    DEBUG_PRINTLN("setFrequency failed");
-    while (1);
-  }
-
-rf95.setTxPower(23, false);
-  DEBUG_PRINTLN("Sleeping radio");
-  rf95.sleep();
-  DEBUG_PRINTLN();
-  packetnum = 0;  // packet counter, we increment per xmission
-
 
   // Configure analog-to-digital (ADC) converter
   configureAdc();
@@ -505,6 +472,48 @@ rf95.setTxPower(23, false);
   DEBUG_PRINT("Cryologger - Automatic Weather Station #"); DEBUG_PRINTLN(UID);
 
   printLine();
+
+//SETUP LORA - ORGANIZE THIS INTO APPROPRIATE SECTIONS 
+// Test LoRa 
+  DEBUG_PRINTLN("Feather LoRa RX/TX Test!");
+
+ talkToRadio();
+  pinMode(PIN_RFM95_RST, OUTPUT);
+  digitalWrite(PIN_RFM95_RST, HIGH);
+  delay(250);
+
+  // manual reset
+  digitalWrite(PIN_RFM95_RST, LOW);
+  delay(100);
+  digitalWrite(PIN_RFM95_RST, HIGH);
+  delay(500);
+
+  //test radio 
+  while (!rf95.init()) {
+    DEBUG_PRINTLN("LoRa radio init failed");
+    while (1);
+  }
+  DEBUG_PRINTLN("LoRa radio init OK!");
+  
+  //test manager 
+  DEBUG_PRINTLN("Feather LoRa Manager Test!");
+    if(!manager.init())
+      DEBUG_PRINTLN("LoRa Manager Init. failed");
+    DEBUG_PRINTLN("LoRa Manager Init. OK!");
+
+  //set frequency 
+  if (!rf95.setFrequency(RF95_FREQ)) {
+    DEBUG_PRINTLN("setFrequency failed");
+    while (1);
+  }
+  DEBUG_PRINT("Set Freq to: "); DEBUG_PRINTLN(RF95_FREQ);
+
+  rf95.setTxPower(23, false);
+  //DEBUG_PRINTLN("Sleeping radio");
+  //rf95.sleep();
+  //DEBUG_PRINTLN();
+  packetnum = 0;  // packet counter, we increment per xmission
+
 
 #if CALIBRATE
   enable5V();   // Enable 5V power
@@ -587,6 +596,8 @@ void loop()
 
     // Increment the sample counter
     sampleCounter++;
+    DEBUG_PRINT("Incremented Sample Counter: Count = ");
+    DEBUG_PRINTLN(sampleCounter);
 
     // Check if program is running for the first time
     if (!firstTimeFlag)
@@ -624,6 +635,9 @@ void loop()
     }
     else
     {
+      DEBUG_PRINTLN();
+      printLine();
+      DEBUG_PRINTLN("Next Round Of Measurements");
       DEBUG_PRINT("Info - Battery voltage good: "); DEBUG_PRINTLN(voltage);
       DEBUG_PRINTLN("Performing Measurements.");
 
@@ -655,6 +669,8 @@ void loop()
       {
          calculateStats(); // Calculate statistics of variables to be transmitted
          writeBuffer();    // Write data to transmit buffer
+          DEBUG_PRINT("Wrote Transmit Buffer. Transmit Counter = ");
+          DEBUG_PRINTLN(transmitCounter);
 
         // Check if data transmission interval has been reached
         if ((transmitCounter == transmitInterval) || firstTimeFlag)
@@ -668,6 +684,7 @@ void loop()
             Serial.print("currentDate: "); Serial.println(currentDate);
             Serial.print("newDate: "); Serial.println(newDate);
           }
+
           #if BASE_STATION 
             
             DEBUG_PRINT("LoRa listening for messages from Nodes for "); DEBUG_PRINT(listen);
@@ -707,7 +724,7 @@ void loop()
             }
 
             // Sleep the radio when done
-            rf95.sleep();
+            //rf95.sleep();
 
             // Clear data stored in tx_message
             memset(tx_message.bytes, 0x00, sizeof(tx_message));
@@ -746,5 +763,8 @@ void loop()
   blinkLed(PIN_LED_GREEN, 1, 25);
 
   // Enter deep sleep and wait for WDT or RTC alarm interrupt
+  #if NODE_STATION
   goToSleep();
+  #endif
+
 }

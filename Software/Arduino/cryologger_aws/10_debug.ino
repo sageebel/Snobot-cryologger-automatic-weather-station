@@ -21,17 +21,23 @@ void printSettings()
   printLine();
   DEBUG_PRINTLN("Current Settings");
   printLine();
-  DEBUG_PRINT("sampleInterval: ");    printTab(1);  DEBUG_PRINTLN(sampleInterval);
-  DEBUG_PRINT("averageInterval: ");   printTab(1);  DEBUG_PRINTLN(averageInterval);
-  DEBUG_PRINT("transmitInterval: ");  printTab(1);  DEBUG_PRINTLN(transmitInterval);
-  DEBUG_PRINT("retransmitCounter: "); printTab(1);  DEBUG_PRINTLN(retransmitCounter);
-  DEBUG_PRINT("retransmitLimit: ");   printTab(1);  DEBUG_PRINTLN(retransmitLimit);
-  DEBUG_PRINT("gnssTimeout: ");       printTab(2);  DEBUG_PRINTLN(gnssTimeout);
-  DEBUG_PRINT("iridiumTimeout: ");    printTab(1);  DEBUG_PRINTLN(iridiumTimeout);
-  DEBUG_PRINT("loggingMode: ");       printTab(2);  DEBUG_PRINTLN(loggingMode);
-  DEBUG_PRINT("batteryCutoff: ");     printTab(2);  DEBUG_PRINTLN(batteryCutoff);
-  DEBUG_PRINT("resetFlag: ");         printTab(2);  DEBUG_PRINTLN(resetFlag);
-  DEBUG_PRINT("freeRam(): ");         printTab(2);  DEBUG_PRINTLN(freeRam());
+  #if BASE_STATION
+  DEBUG_PRINT("StationType");               printTab(2);  DEBUG_PRINTLN("base");
+  #endif
+  #if NODE_STATION
+  DEBUG_PRINT("StationType");               printTab(2);  DEBUG_PRINTLN("node");
+  #endif
+  DEBUG_PRINT("sampleInterval (min): ");    printTab(1);  DEBUG_PRINTLN(sampleInterval);
+  DEBUG_PRINT("averageInterval: ");         printTab(1);  DEBUG_PRINTLN(averageInterval);
+  DEBUG_PRINT("transmitInterval: ");        printTab(1);  DEBUG_PRINTLN(transmitInterval);
+  DEBUG_PRINT("retransmitCounter: ");       printTab(1);  DEBUG_PRINTLN(retransmitCounter);
+  DEBUG_PRINT("retransmitLimit: ");         printTab(1);  DEBUG_PRINTLN(retransmitLimit);
+  DEBUG_PRINT("gnssTimeout: ");             printTab(2);  DEBUG_PRINTLN(gnssTimeout);
+  DEBUG_PRINT("iridiumTimeout: ");          printTab(1);  DEBUG_PRINTLN(iridiumTimeout);
+  DEBUG_PRINT("loggingMode: ");             printTab(2);  DEBUG_PRINTLN(loggingMode);
+  DEBUG_PRINT("batteryCutoff: ");           printTab(2);  DEBUG_PRINTLN(batteryCutoff);
+  DEBUG_PRINT("resetFlag: ");               printTab(2);  DEBUG_PRINTLN(resetFlag);
+  DEBUG_PRINT("freeRam(): ");               printTab(2);  DEBUG_PRINTLN(freeRam());
   printLine();
 
 }
