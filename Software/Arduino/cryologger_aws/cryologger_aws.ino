@@ -71,12 +71,17 @@ char UID[6] = "s1o";          // must be 3 characters
 // Constants
 // ----------------------------------------------------------------------------
 #define NODE_STATION   false  // Set if node is just to transmit messages by LoRa
-#define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
+#define BASE_STATION   true  // Set if RockBlock is installed and you wish to listen for LoRa messages
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char          node_name           = 'h';      // Node group identifier(high = h, mid = m, low = l, north = n)
+#if NODE_STATION
+char          station_type        = 'n';      // station type identifier 
+#endif
+#if BASE_STATION
+char          station_type        = 'b';      // station type identifier 
+#endif
 unsigned int  node_number         = 5;            // Node number
 unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
 unsigned int  total_nodes         = 3;            // Total nodes in the network (excluding base station) 
@@ -227,14 +232,14 @@ Statistic soilmoist2Stats;      // Soil Moisture (TEROS-10)
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
 // ----------------------------------------------------------------------------
-unsigned int  listen              = 45;           //Time in seconds to listen for incoming or sending LoRa messages 
+unsigned int  listen              = 300;     //Time in seconds to listen for incoming or sending LoRa messages 
 
 unsigned long sampleInterval      = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
-unsigned int  averageInterval     = 4;     // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 4 for every 15 minutes for testing) 
+unsigned int  averageInterval     = 1;      // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 1 for every 5 minutes for testing) 
 unsigned int  transmitInterval    = 1;      // Number of messages in each Iridium transmission (340-byte limit)
 unsigned int  retransmitLimit     = 4;      // Failed data transmission reattempts (340-byte limit)
 unsigned int  gnssTimeout         = 120;    // Timeout for GNSS signal acquisition (seconds)
-unsigned int  iridiumTimeout      = 180;    // Timeout for Iridium transmission (seconds)
+unsigned int  iridiumTimeout      = 2;    // Timeout for Iridium transmission (seconds)(changed to 10 for testing since I know iridium isnt working right now)
 bool          firstTimeFlag       = true;   // Flag to determine if program is running for the first time
 float         batteryCutoff       = 0.0;    // Battery voltage cutoff threshold (V)
 byte          loggingMode         = 1;      // Flag for new log file creation. 1: daily, 2: monthly, 3: yearly
@@ -339,7 +344,7 @@ typedef union
   struct
   {
     uint32_t  unixtime;           // UNIX Epoch time                (4 bytes)
-    int16_t   node;               // node number                    (2 bytes)
+    int16_t   node_number;        // node number                    (2 bytes)
     int16_t   temperatureInt;     // Internal temperature (°C)      (2 bytes)   * 100
     uint16_t  humidityInt;        // Internal humidity (%)          (2 bytes)   * 100
     uint16_t  pressureInt;        // Internal pressure (hPa)        (2 bytes)   - 850 * 100
@@ -638,6 +643,7 @@ void loop()
       DEBUG_PRINTLN();
       printLine();
       DEBUG_PRINTLN("Next Round Of Measurements");
+      DEBUG_PRINT("Cryologger - Automatic Weather Station #"); DEBUG_PRINTLN(UID);
       DEBUG_PRINT("Info - Battery voltage good: "); DEBUG_PRINTLN(voltage);
       DEBUG_PRINTLN("Performing Measurements.");
 
@@ -667,73 +673,73 @@ void loop()
       // Check if number of samples collected has been reached and calculate statistics (if enabled)
       if ((sampleCounter == averageInterval) || firstTimeFlag)
       {
-         calculateStats(); // Calculate statistics of variables to be transmitted
-         writeBuffer();    // Write data to transmit buffer
-          DEBUG_PRINT("Wrote Transmit Buffer. Transmit Counter = ");
-          DEBUG_PRINTLN(transmitCounter);
+        calculateStats(); // Calculate statistics of variables to be transmitted
+        writeBuffer();    // Write data to transmit buffer
 
-        // Check if data transmission interval has been reached
-        if ((transmitCounter == transmitInterval) || firstTimeFlag)
-        {
-          // Check for date change
-          checkDate();
-          if (firstTimeFlag || (currentDate != newDate))
+        //DEBUG_PRINT("Wrote Transmit Buffer. Transmit Counter = ");
+        //DEBUG_PRINTLN(transmitCounter);
+
+        //Recieve averaged data if a base station
+       #if BASE_STATION 
+          DEBUG_PRINT("LoRa listening for messages from Nodes for "); DEBUG_PRINT(listen);
+          DEBUG_PRINTLN(" seconds");
+            
+          uint32_t tStart = millis();
+          uint32_t tEnd = tStart;
+          while ((tEnd - tStart) <= period)
           {
-            readGnss(); // Sync RTC with the GNSS
-            currentDate = newDate;
-            Serial.print("currentDate: "); Serial.println(currentDate);
-            Serial.print("newDate: "); Serial.println(newDate);
+            LoRa_receive(); // Listening function
+            petDog();
+            tEnd = millis();
+          }
+              
+          // Sleep the radio when done
+          rf95.sleep();
+
+          // Check if data transmission interval has been reached
+          if ((transmitCounter == transmitInterval) || firstTimeFlag)
+          {
+           // Check for date change
+           checkDate();
+            if (firstTimeFlag || (currentDate != newDate))
+            {
+              readGnss(); // Sync RTC with the GNSS
+              currentDate = newDate;
+              Serial.print("currentDate: "); Serial.println(currentDate);
+              Serial.print("newDate: "); Serial.println(newDate);
+            }
+            transmitData();
+          }
+       #endif
+
+        // Transmit Averaged Data if a Node Station
+        #if NODE_STATION // Send LoRa data
+    
+          // Start loop to keep sending data for given period until acknowledgement received
+          uint32_t tStart = millis();
+          uint32_t tEnd = tStart;
+          while ((tEnd - tStart) <= period)
+          {
+          LoRa_send();
+          petDog(); // Pet dog after each attempt to send
+            // Exit loop if acknowledgement of receipt is received
+          if (loraRxFlag == true)
+            {
+            break;
+            }
+            tEnd = millis();
           }
 
-          #if BASE_STATION 
-            
-            DEBUG_PRINT("LoRa listening for messages from Nodes for "); DEBUG_PRINT(listen);
-            DEBUG_PRINTLN(" seconds");
-          
-            uint32_t tStart = millis();
-            uint32_t tEnd = tStart;
-            while ((tEnd - tStart) <= period)
-            {
-             LoRa_receive(); // Listening function
-             petDog();
-             tEnd = millis();
-            }
-            
-             // Sleep the radio when done
-              rf95.sleep();
+          // Sleep the radio when done
+          rf95.sleep();
 
-            transmitData(); // Transmit data via Iridium transceiver
-          #endif
+          // Clear data stored in tx_message
+          memset(tx_message.bytes, 0x00, sizeof(tx_message));
+    
+          // Reset LoRa flag
+          loraRxFlag = false;
+        #endif
 
-         
-          #if NODE_STATION // Send LoRa data
-          
-            // Start loop to keep sending data for given period until acknowledgement received
-            uint32_t tStart = millis();
-            uint32_t tEnd = tStart;
-            while ((tEnd - tStart) <= period)
-            {
-              LoRa_send();
-              petDog(); // Pet dog after each attempt to send
-                // Exit loop if acknowledgement of receipt is received
-              if (loraRxFlag == true)
-              {
-                break;
-              }
-              tEnd = millis();
-            }
-
-            // Sleep the radio when done
-            //rf95.sleep();
-
-            // Clear data stored in tx_message
-            memset(tx_message.bytes, 0x00, sizeof(tx_message));
-        
-            // Reset LoRa flag
-            loraRxFlag = false;
-          #endif
-
-        }
         sampleCounter = 0; // Reset sample counter
       }
 
@@ -763,8 +769,7 @@ void loop()
   blinkLed(PIN_LED_GREEN, 1, 25);
 
   // Enter deep sleep and wait for WDT or RTC alarm interrupt
-  #if NODE_STATION
   goToSleep();
-  #endif
+ 
 
 }

@@ -117,6 +117,7 @@ void setup() {
 
 void loop() {
 
+#if BASE_STATION
   delay(1000);
     Serial.println("Listening For Messages from Node Station..."); // Waiting to see if there is a message from rf95_server
     uint8_t from;
@@ -131,7 +132,7 @@ void loop() {
       Serial.print(from, HEX);
       Serial.print(": ");
       Serial.println((char*)buf);
-      rxFlag = true; //Set rxFlag to true
+      loraRxFlag = true; //Set rxFlag to true
       
       // Send a reply back to the originator client
       Serial.println("Sending a Reply to Node");
@@ -142,4 +143,5 @@ void loop() {
       }
     }
   }
+#endif
 }

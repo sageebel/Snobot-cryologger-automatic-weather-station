@@ -106,6 +106,29 @@ void printMoSbd()
   printLine();
 
 }
+void printRx()
+{
+  printLine();
+  DEBUG_PRINTLN("Rx Message Data");
+  printLine();
+
+  DEBUG_PRINT("unixtime:");         printTab(2);  DEBUG_PRINTLN(rx_message.unixtime);
+  DEBUG_PRINT("temperatureInt:");   printTab(2);  DEBUG_PRINTLN(rx_message.temperatureInt);
+  DEBUG_PRINT("humidityInt:");      printTab(2);  DEBUG_PRINTLN(rx_message.humidityInt);
+  DEBUG_PRINT("pressureInt:");      printTab(2);  DEBUG_PRINTLN(rx_message.pressureInt);
+  DEBUG_PRINT("temperatureExt:");   printTab(2);  DEBUG_PRINTLN(rx_message.temperatureExt);
+  DEBUG_PRINT("humidityExt:");      printTab(2);  DEBUG_PRINTLN(rx_message.humidityExt);
+  DEBUG_PRINT("shortwave1:");       printTab(2);  DEBUG_PRINTLN(rx_message.shortwave1);
+  DEBUG_PRINT("shortwave2:");       printTab(2);  DEBUG_PRINTLN(rx_message.shortwave2);
+  DEBUG_PRINT("maxbotix:");         printTab(2);  DEBUG_PRINTLN(rx_message.distMaxbotix_av);
+  DEBUG_PRINT("voltage:");          printTab(2);  DEBUG_PRINTLN(rx_message.voltage);
+  DEBUG_PRINT("transmitDuration:"); printTab(1);  DEBUG_PRINTLN(rx_message.transmitDuration);
+  DEBUG_PRINT("transmitStatus:");   printTab(2);  DEBUG_PRINTLN(rx_message.transmitStatus);
+  DEBUG_PRINT("iterationCounter:"); printTab(1);  DEBUG_PRINTLN(rx_message.iterationCounter);
+
+  printLine();
+
+}
 
 // Print contents of union/structure storing Mobile Originated (MT) SBD message data
 void printMtSbd()

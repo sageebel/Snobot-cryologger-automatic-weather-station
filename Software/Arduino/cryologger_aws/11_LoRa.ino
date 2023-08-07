@@ -63,8 +63,9 @@ void talkToSD(){
 
   void LoRa_receive()
   {
+    //DEBUG_PRINTLN("LoRa Receive Function Initiated");
     // Volatile boolean for if a message is received
-    volatile bool rxFlag = false;
+    volatile bool loraRxFlag = false;
     uint8_t from;
 
     talkToRadio();
@@ -80,13 +81,13 @@ void talkToSD(){
         DEBUG_PRINT_HEX(from, HEX);
         DEBUG_PRINT(": ");
         DEBUG_PRINTLN((char*)buf);
-        rxFlag = true; //Set rxFlag to true
+        loraRxFlag = true; //Set rxFlag to true
         
         // Send a reply back to the originator client
         if (!manager.sendtoWait(rx_reply, sizeof(rx_reply), from))
         {
             DEBUG_PRINTLN("sendtoWait failed");
-            rxFlag = false; //Set rxFlag to false if sendtoWait fails
+            loraRxFlag = false; //Set rxFlag to false if sendtoWait fails
         }
       }
       else 
@@ -94,8 +95,13 @@ void talkToSD(){
         (DEBUG_PRINTLN("Can't find a message"));
       }
     }
+    //else
+    //{
+     // DEBUG_PRINTLN("LoRa Manager Not Available.");
+    //}
+    
 
-    if (rxFlag) 
+    if (loraRxFlag) 
     {
       // Add received buf into rx_message
       memcpy(&rx_message, buf, sizeof(rx_message)); // Copy received into rx_message
@@ -107,20 +113,17 @@ void talkToSD(){
       talkToSD(); // Talk to SD card
     
       // write incoming data to SD card 
-
-      logData(); 
-
-      DEBUG_PRINT("Logged Data From Snobot #");
+      DEBUG_PRINT("Logging Data From Snobot #");
       DEBUG_PRINT_HEX(from, HEX);
       DEBUG_PRINT(": ");
       DEBUG_PRINTLN((char*)buf);
 
-    
+      logDataRx(); 
     }
     // Clear data stored in rx_message
     memset(rx_message.bytes, 0x00, sizeof(rx_message));
 
     // Clear rxFlag
-    rxFlag = false;
+    loraRxFlag = false;
   }
 //#endif

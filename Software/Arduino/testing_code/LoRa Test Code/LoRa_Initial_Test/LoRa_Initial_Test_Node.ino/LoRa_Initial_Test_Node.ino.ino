@@ -117,7 +117,7 @@ void setup() {
   rf95.setTxPower(23, false);
 }
 
-int16_t packetnum = 0;  // packet counter, we increment per xmission
+//int16_t packetnum = 0;  // packet counter, we increment per xmission
 
 void loop() {
   delay(1000); // Wait 1 second between transmits, could also 'sleep' here!

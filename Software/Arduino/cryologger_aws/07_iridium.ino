@@ -238,7 +238,7 @@ void ISBDDiagsCallback(IridiumSBD * device, char c)
 #endif
 }
 
-/*
+
 // Required for RockBLOCK v3.F only! Controls inverted logic of on/off pin
 void IridiumSBD::setSleepPin(uint8_t enable)
 {
@@ -253,4 +253,4 @@ void IridiumSBD::setSleepPin(uint8_t enable)
       diagprint(F("ASLEEP\r\n"));
    }
 }
-*/
+

@@ -324,6 +324,148 @@ void updateFileCreate(FsFile *dataFile)
   }
 }
 
+//Create a log file for incoming Node Datasets received via LoRa 
+void createLogFileRx()
+{
+#if LOGGING
+
+  // Get timestamp log file name
+  sprintf(logFileName, "AWS_%s_20%02d%02d%02d_%02d%02d%02d.csv",
+          rx_message.node_number, rtc.getYear(), rtc.getMonth(), rtc.getDay(),
+          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+
+  DEBUG_PRINT("Info -Node Log file name: "); DEBUG_PRINTLN(logFileName);
+
+  // Check if log file is open
+  if (logFile.isOpen())
+    logFile.close();
+
+  // Create a new log file and open for writing
+    // O_CREAT  - Create the file if it does not exist
+    // O_APPEND - Seek to the end of the file prior to each write
+    // O_WRITE  - Open the file for writing
+  if (!logFile.open(logFileName, O_CREAT | O_APPEND | O_WRITE))
+  {
+    DEBUG_PRINT("Warning - Failed to create node log file"); DEBUG_PRINTLN(logFileName);
+    return;
+  }
+  else
+  {
+    DEBUG_PRINT("Info - Created log file: "); DEBUG_PRINTLN(logFileName);
+  }
+
+  if (!logFile.isOpen())
+  {
+    DEBUG_PRINTLN(F("Unable to open file"));
+  }
+
+  // Update file create timestamp
+  updateFileCreate(&logFile);
+
+  // Write header to file
+  logFile.println("unixtime,node,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext"
+                  "distMaxbotix_av, shortwave1, shortwave2, soilmoist1, soilmoist2, voltage,"
+                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2"
+                  "transmitduration,transmitstatus,iterationCounter");
+
+  // Unused: timer_hmp60,timer_5103l
+
+
+  // Close log file
+  logFile.close();
+#endif
+}
+
+
+
+//Log Data Recieved from a Node to the Base Station SD Card 
+void logDataRx()
+{
+#if LOGGING
+  // Configure microSD
+  configureSd();
+
+  // Start loop timer
+  unsigned long loopStartTime = millis();
+
+  // Check if microSD is online
+  if (online.microSd)
+  {
+    // Check if new log file should be created
+    checkLogFile();
+    if (currentLogFile != newLogFile)
+    {
+      createLogFileRx();
+      currentLogFile = newLogFile;
+      samplesSaved = 0;
+    }
+
+    // Write to microSD card
+    if (logFile.open(logFileName, O_APPEND | O_WRITE))
+    {
+      // Sensor information
+      samplesSaved++; //  Increment sample count
+      logFile.print(rx_message.node_number);        logFile.print(",");
+      logFile.print(rx_message.unixtime);            logFile.print(",");
+      logFile.print(rx_message.voltage);             logFile.print(",");
+      logFile.print(rx_message.temperatureInt);      logFile.print(",");
+      logFile.print(rx_message.humidityInt);         logFile.print(",");
+      logFile.print(rx_message.pressureInt);         logFile.print(",");
+      logFile.print(rx_message.temperatureExt);      logFile.print(",");
+      logFile.print(rx_message.humidityExt);         logFile.print(",");
+      logFile.print(rx_message.shortwave1,2);        logFile.print(",");
+      logFile.print(rx_message.shortwave2,2);        logFile.print(",");
+      logFile.print(rx_message.distMaxbotix_av);     logFile.print(",");   
+      //logFile.print(rx_message.distMaxbotix_std);    logFile.print(","); 
+      //logFile.print(rx_message.distMaxbotix_max);    logFile.print(","); 
+      //logFile.print(rx_message.distMaxbotix_min);    logFile.print(","); 
+      //logFile.print(rx_message.distMaxbotix_nan);    logFile.print(","); 
+      logFile.print(rx_message.soilmoist1,2);        logFile.print(",");
+      logFile.print(rx_message.soilmoist2,2);        logFile.print(",");
+
+      // Debugging information
+      logFile.print(rx_message.transmitStatus);      logFile.print(",");
+
+      // Update file access timestamps
+      updateFileAccess(&logFile);
+
+      // Force data to SD and update the directory entry to avoid data loss
+      if (!logFile.sync())
+      {
+        DEBUG_PRINTLN(F("Warning - microSD sync error!"));
+      }
+
+      // Close the log file
+      if (!logFile.close())
+      {
+        DEBUG_PRINTLN("Warning - Failed to close log file!");
+        //closeFailCounter++; // Count number of failed file closes
+      }
+
+  //print the contents of the incoming message 
+  #if DEBUG
+  printRx();
+  #endif
+
+
+      blinkLed(PIN_LED_GREEN, 2, 100);
+    }
+    else
+    {
+      DEBUG_PRINTLN(F("Warning - Unable to open file!"));
+    }
+  }
+  else
+  {
+    DEBUG_PRINTLN(F("Warning - microSD is offline!"));
+  }
+
+  // Stop the loop timer
+  timer.writeMicroSd = millis() - loopStartTime;
+#endif
+}
+
+
 // Update the file access and write timestamps
 void updateFileAccess(FsFile *dataFile)
 {
