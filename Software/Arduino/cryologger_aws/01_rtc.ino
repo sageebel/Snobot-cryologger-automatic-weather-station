@@ -25,8 +25,8 @@ void configureRtc()
   rtc.setAlarmTime(0, sampleInterval, 0); // hours, minutes, seconds
 
   // Enable alarm for hour rollover match
-  //rtc.enableAlarm(rtc.MATCH_MMSS);
-  rtc.enableAlarm(rtc.MATCH_SS); // enabled this for testing - reset to hour rollover match for deployment 
+  rtc.enableAlarm(rtc.MATCH_MMSS);
+  //rtc.enableAlarm(rtc.MATCH_SS); // enabled this for testing - reset to hour rollover match for deployment 
 
   // Attach alarm interrupt service routine (ISR)
   rtc.attachInterrupt(alarmIsr);
@@ -35,7 +35,7 @@ void configureRtc()
 
   DEBUG_PRINT("Info - RTC initialized "); printDateTime();
   DEBUG_PRINT("Info - Initial alarm "); printAlarm();
-  DEBUG_PRINT("Info - Alarm match "); DEBUG_PRINTLN(rtc.MATCH_SS); // changed to rtc.MATCH_SS for testing - change back to rtc.MATCH_MMSS for deployment 
+  DEBUG_PRINT("Info - Alarm match "); DEBUG_PRINTLN(rtc.MATCH_MMSS); // changed to rtc.MATCH_SS for testing - change back to rtc.MATCH_MMSS for deployment 
 }
 
 // Read RTC
@@ -49,10 +49,11 @@ void readRtc()
 
   sprintf(dateTime, "20%02d-%02d-%02d %02d:%02d:%02d",
           rtc.getYear(), rtc.getMonth(), rtc.getDay(),
-          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds()); 
 
   // Write data to union
   moSbdMessage.unixtime = unixtime;
+  tx_message.unixtime = unixtime;
 
   // Stop the loop timer
   timer.readRtc = millis() - loopStartTime;
@@ -75,8 +76,8 @@ void setRtcAlarm()
     rtc.setAlarmTime(0, sampleInterval, 0); // hours, minutes, seconds
 
     // Enable alarm for hour rollover match
-    //rtc.enableAlarm(rtc.MATCH_MMSS);
-    rtc.enableAlarm(rtc.MATCH_SS); // enabled this for testing - reset to hour rollover match for deployment 
+    rtc.enableAlarm(rtc.MATCH_MMSS);
+    //rtc.enableAlarm(rtc.MATCH_SS); // enabled this for testing - reset to hour rollover match for deployment 
 
     // Reset sample counter
     sampleCounter = 0;
@@ -138,7 +139,7 @@ void printDateTime()
   char dateTimeBuffer[25];
   sprintf(dateTimeBuffer, "20%02d-%02d-%02d %02d:%02d:%02d",
           rtc.getYear(), rtc.getMonth(), rtc.getDay(),
-          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds()); //convert from GMT to PST 
   DEBUG_PRINTLN(dateTimeBuffer);
 }
 

@@ -60,7 +60,7 @@
 // ----------------------------------------------------------------------------
 // Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[6] = "s1o";          // must be 3 characters 
+char UID[6] = "b2no";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -70,21 +70,25 @@ char UID[6] = "s1o";          // must be 3 characters
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-#define NODE_STATION   false  // Set if node is just to transmit messages by LoRa
-#define BASE_STATION   true  // Set if RockBlock is installed and you wish to listen for LoRa messages
+#define NODE_STATION   false    // Set if node is just to transmit messages by LoRa
+#define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
+
+unsigned int  node_number         = 4;            // Node number
+unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
+unsigned int  total_nodes         = 5;            // Total nodes in the network (excluding base station) 
+
 #if NODE_STATION
 char          station_type        = 'n';      // station type identifier 
+unsigned int  station_number      = node_number;
 #endif
 #if BASE_STATION
 char          station_type        = 'b';      // station type identifier 
+unsigned int  station_number      = base_station_number; 
 #endif
-unsigned int  node_number         = 5;            // Node number
-unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
-unsigned int  total_nodes         = 3;            // Total nodes in the network (excluding base station) 
 
 // ----------------------------------------------------------------------------
 // Debugging macros
@@ -232,10 +236,15 @@ Statistic soilmoist2Stats;      // Soil Moisture (TEROS-10)
 // ----------------------------------------------------------------------------
 // User defined global variable declarations
 // ----------------------------------------------------------------------------
-unsigned int  listen              = 300;     //Time in seconds to listen for incoming or sending LoRa messages 
 
+#if BASE_STATION        
+unsigned int  listen              = 90;     //Time in seconds to listen for incoming LoRa messages 
+#endif
+#if NODE_STATION
+unsigned int  listen              = 45;     //Time in seconds to send LoRa messages 
+#endif
 unsigned long sampleInterval      = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
-unsigned int  averageInterval     = 1;      // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 1 for every 5 minutes for testing) 
+unsigned int  averageInterval     = 3;      // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 3 for every 15 minutes for testing) 
 unsigned int  transmitInterval    = 1;      // Number of messages in each Iridium transmission (340-byte limit)
 unsigned int  retransmitLimit     = 4;      // Failed data transmission reattempts (340-byte limit)
 unsigned int  gnssTimeout         = 120;    // Timeout for GNSS signal acquisition (seconds)
@@ -344,19 +353,18 @@ typedef union
   struct
   {
     uint32_t  unixtime;           // UNIX Epoch time                (4 bytes)
-    int16_t   node_number;        // node number                    (2 bytes)
-    int16_t   temperatureInt;     // Internal temperature (°C)      (2 bytes)   * 100
-    uint16_t  humidityInt;        // Internal humidity (%)          (2 bytes)   * 100
-    uint16_t  pressureInt;        // Internal pressure (hPa)        (2 bytes)   - 850 * 100
-    int16_t   temperatureExt;     // External temperature (°C)      (2 bytes)   * 100
-    uint16_t  humidityExt;        // External humidity (%)          (2 bytes)   * 10
+    int16_t   station_number;        // node number                    (2 bytes)
+    int16_t   temperatureInt;     // Internal temperature (°C)      (2 bytes)   
+    uint16_t  humidityInt;        // Internal humidity (%)          (2 bytes)   
+    uint16_t  pressureInt;        // Internal pressure (hPa)        (2 bytes)  / 100
+    int16_t   temperatureExt;     // External temperature (°C)      (2 bytes)   
+    uint16_t  humidityExt;        // External humidity (%)          (2 bytes)   
     // int16_t   pitch;              // Pitch (°)                      (2 bytes)   * 100
     // int16_t   roll;               // Roll (°)                       (2 bytes)   * 100
     // uint16_t  windSpeed;          // Mean wind speed (m/s)          (2 bytes)   * 100
     // uint16_t  windDirection;      // Mean wind direction (°)        (2 bytes)
     // uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
     // uint16_t  windGustDirection;  // Wind gust direction (°)        (2 bytes)
-    uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
    // uint16_t  distMaxbotix_std;   // Std dist sensor to surface (mm)(2 bytes)
     //uint16_t  distMaxbotix_max;   // Max dist sensor to surface (mm)(2 bytes)
     //uint16_t  distMaxbotix_min;   // Min dist sensor to surface (mm)(2 bytes)
@@ -365,11 +373,12 @@ typedef union
     // int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     // uint8_t   satellites;         // # of satellites                (1 byte)
     // uint16_t  hdop;               // HDOP                           (2 bytes)
-    float     shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
-    float     shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
+    uint16_t  shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
+    uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
     uint16_t  soilmoist1;         // Soil Moisture 15cm (VWC)       (2 bytes)
     uint16_t  soilmoist2;         // Soil Moisture 15cm (VWC)       (2 bytes)
-    uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   * 100
+    uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
+    uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
     uint8_t   transmitStatus;     // Iridium return code            (1 byte)
     uint16_t  iterationCounter;   // Message counter                (2 bytes)
@@ -377,7 +386,7 @@ typedef union
   uint8_t bytes[33];
 } SBD_MO_MESSAGE;
 
-SBD_MO_MESSAGE moSbdMessage;      //Iridium Message 
+SBD_MO_MESSAGE moSbdMessage;      //Iridium Message (Base Stations only) 
 SBD_MO_MESSAGE tx_message;        //Outgoing LoRa message 
 SBD_MO_MESSAGE rx_message;        //Incoming LoRa message (Base stations only) 
 size_t messageSize = sizeof(tx_message); // size (in bytes) of data to be stored and transmitted 
@@ -642,6 +651,7 @@ void loop()
     {
       DEBUG_PRINTLN();
       printLine();
+
       DEBUG_PRINTLN("Next Round Of Measurements");
       DEBUG_PRINT("Cryologger - Automatic Weather Station #"); DEBUG_PRINTLN(UID);
       DEBUG_PRINT("Info - Battery voltage good: "); DEBUG_PRINTLN(voltage);
@@ -674,13 +684,13 @@ void loop()
       if ((sampleCounter == averageInterval) || firstTimeFlag)
       {
         calculateStats(); // Calculate statistics of variables to be transmitted
-        writeBuffer();    // Write data to transmit buffer
-
+        
         //DEBUG_PRINT("Wrote Transmit Buffer. Transmit Counter = ");
         //DEBUG_PRINTLN(transmitCounter);
 
         //Recieve averaged data if a base station
        #if BASE_STATION 
+          writeBuffer();    // Write data to transmit buffer
           DEBUG_PRINT("LoRa listening for messages from Nodes for "); DEBUG_PRINT(listen);
           DEBUG_PRINTLN(" seconds");
             
@@ -689,7 +699,7 @@ void loop()
           while ((tEnd - tStart) <= period)
           {
             LoRa_receive(); // Listening function
-            petDog();
+            petDog(); //pet dog after each listen
             tEnd = millis();
           }
               

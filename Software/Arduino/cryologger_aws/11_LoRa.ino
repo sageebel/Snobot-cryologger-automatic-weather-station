@@ -16,8 +16,7 @@ void talkToSD(){
   delay(1);
 }
 
-// Send LoRa line
-//#if NODE_STATION
+
   void LoRa_send(){
     unsigned int loopStartTime = millis();
     uint8_t from;
@@ -26,6 +25,8 @@ void talkToSD(){
     packetnum++;
     
     #if DEBUG
+    printLine();
+    DEBUG_PRINTLN();
     DEBUG_PRINTLN("Attempting to Transmit Message to Base via LoRa..."); // Send a message to rf95_server
     #endif
 
@@ -41,6 +42,8 @@ void talkToSD(){
         DEBUG_PRINT_HEX(from, HEX);
         DEBUG_PRINT(": ");
         DEBUG_PRINTLN((char*)buf);
+        DEBUG_PRINTLN("I sent this data:");
+        printTx(); //print contents of the tx message 
         loraRxFlag = true;
       }
       else
@@ -56,10 +59,6 @@ void talkToSD(){
     unsigned int loraLoopTime = millis() - loopStartTime;
     Serial.print("LoRa_send() function execution: "); Serial.print(loraLoopTime); Serial.println(F(" ms"));
   }
-//#endif
-
-//#if BASE_STATION //listen for LoRa messages and write them to the SD card 
-  // Write received data from LoRa to RockBlock buffer
 
   void LoRa_receive()
   {

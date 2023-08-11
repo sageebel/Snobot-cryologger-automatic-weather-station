@@ -1,26 +1,51 @@
 // Calculate statistics
 void calculateStats()
 {
-  // Write data to union
-  moSbdMessage.temperatureInt  = temperatureIntStats.average()   * 100;          // Mean internal temperature (°C) why multiply by 100 here?
-  moSbdMessage.humidityInt     = humidityIntStats.average()      * 100;          // Mean internal humidity (%)
-  moSbdMessage.pressureInt     = (pressureIntStats.average()     - 850) * 100;   // Mean internal pressure (hPa)
-  moSbdMessage.temperatureExt  = temperatureExtStats.average()   * 100;          // Mean external temperature (°C)
-  moSbdMessage.humidityExt     = humidityExtStats.average()      * 100;          // Mean external humidity (%)
-  moSbdMessage.shortwave1      = shortwave1Stats.average()       * 10  ;         // Mean solar irradiance (W m-2)
-  moSbdMessage.shortwave2      = shortwave2Stats.average()       * 10  ;         // Mean solar irradiance (W m-2)
-  moSbdMessage.distMaxbotix_av = MaxbotixStats_av.average();                     // distance (mm)
-  moSbdMessage.voltage         = batteryStats.average()          * 100;          // Mean battery voltage (V)
+  #if BASE_STATION
+  // Write data to union - to be sent out with Iridium                      
+    moSbdMessage.station_number  = station_number; 
+    moSbdMessage.unixtime        = unixtime  ; 
+    moSbdMessage.temperatureInt  = temperatureIntStats.average()   *100;          // Mean internal temperature (°C) why multiply by 100 here?
+    moSbdMessage.humidityInt     = humidityIntStats.average()      *100;          // Mean internal humidity (%)
+    moSbdMessage.pressureInt     = (pressureIntStats.average() -850) *100 ;    // Mean internal pressure (hPa) ** instrument measures in pascals 
+    moSbdMessage.temperatureExt  = temperatureExtStats.average()   *100;          // Mean external temperature (°C)
+    moSbdMessage.humidityExt     = humidityExtStats.average()  *100;        // Mean external humidity (%)
+    moSbdMessage.shortwave1      = shortwave1Stats.average();         // Mean solar irradiance (W m-2)
+    moSbdMessage.shortwave2      = shortwave2Stats.average();         // Mean solar irradiance (W m-2)
+    moSbdMessage.soilmoist1      = soilmoist1Stats.average();         // 
+    moSbdMessage.soilmoist2      = soilmoist2Stats.average();         // 
+    moSbdMessage.distMaxbotix_av = MaxbotixStats_av.average();                // distance (mm)
+    moSbdMessage.voltage         = batteryStats.average() *1000;          // Mean battery voltage (V)
 
-  // Calculate mean wind speed and direction vectors
-  // windVectors();
+    // Calculate mean wind speed and direction vectors
+    // windVectors();
 
-  // Clear all statistics objects
-  clearStats();
+    // Clear all statistics objects
+    clearStats();
+  #endif
 
-  // Clear wind gust speed and direction maximums
-  windGustSpeed = 0;
-  windGustDirection = 0;
+  #if NODE_STATION
+  // Write data to union - to be sent via LoRa 
+    tx_message.station_number  = station_number; 
+    tx_message.unixtime        = unixtime  ;  
+    tx_message.temperatureInt  = temperatureIntStats.average() *100;          // Mean internal temperature (°C) 
+    tx_message.humidityInt     = humidityIntStats.average() *100;          // Mean internal humidity (%)
+    tx_message.pressureInt     = (pressureIntStats.average() -850) * 100;   // Mean internal pressure (hPa)
+    tx_message.temperatureExt  = temperatureExtStats.average() *100;          // Mean external temperature (°C)
+    tx_message.humidityExt     = humidityExtStats.average() *100;          // Mean external humidity (%)
+    tx_message.shortwave1      = shortwave1Stats.average() *100;         // Mean solar irradiance (W m-2)
+    tx_message.shortwave2      = shortwave2Stats.average() *100;         // Mean solar irradiance (W m-2)
+    tx_message.soilmoist1      = soilmoist1Stats.average();         // 
+    tx_message.soilmoist2      = soilmoist2Stats.average();         // 
+    tx_message.distMaxbotix_av = MaxbotixStats_av.average();                     // distance (mm)
+    tx_message.voltage         = batteryStats.average() *100;          // Mean battery voltage (mV)
+
+    // Calculate mean wind speed and direction vectors
+    // windVectors();
+
+    // Clear all statistics objects
+    clearStats();
+  #endif
 }
 
 // Clear statistics objects
@@ -107,7 +132,7 @@ void printStats()
   DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(MaxbotixStats_av.count());        printTab(1); 
   DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(MaxbotixStats_av.minimum());             printTab(1);
   DEBUG_PRINT(F("Max: "));        DEBUG_PRINT(MaxbotixStats_av.maximum());             printTab(1);
-  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(MaxbotixStats_av.average());            printTab(1);            
+  DEBUG_PRINT(F("Mean: "));       DEBUG_PRINTLN(MaxbotixStats_av.average());                
   // DEBUG_PRINT(F("Wind speed"));   printTab(1);
   // DEBUG_PRINT(F("Samples: "));    DEBUG_PRINT(windSpeedStats.count());          printTab(1);
   // DEBUG_PRINT(F("Min: "));        DEBUG_PRINT(windSpeedStats.minimum());        printTab(1);

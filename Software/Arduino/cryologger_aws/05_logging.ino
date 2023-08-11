@@ -231,9 +231,9 @@ void logData()
 #if DEBUG
       // Print logged data to Serial Monitor
       printLine();
-      DEBUG_PRINTLN(F("Logged Data"));
+      DEBUG_PRINTLN(F("Logged Local Data"));
       printLine();
-      DEBUG_PRINT("Info - Logging data to: "); DEBUG_PRINTLN(logFileName);
+      DEBUG_PRINT("Info - Logging local data to: "); DEBUG_PRINTLN(logFileName);
       DEBUG_PRINT(samplesSaved);        DEBUG_PRINT(",");
       DEBUG_PRINT(dateTime);            DEBUG_PRINT(",");
       DEBUG_PRINT(voltage);             DEBUG_PRINT(",");
@@ -330,11 +330,10 @@ void createLogFileRx()
 #if LOGGING
 
   // Get timestamp log file name
-  sprintf(logFileName, "AWS_%s_20%02d%02d%02d_%02d%02d%02d.csv",
-          rx_message.node_number, rtc.getYear(), rtc.getMonth(), rtc.getDay(),
-          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+  sprintf(logFileName, "AWS_%02d_20%02d%02d%02d_%02d%02d%02d.csv",
+          rx_message.station_number, rtc.getYear(), rtc.getMonth(), rtc.getDay(),
+          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds()); //convert from GMT to PST 
 
-  DEBUG_PRINT("Info -Node Log file name: "); DEBUG_PRINTLN(logFileName);
 
   // Check if log file is open
   if (logFile.isOpen())
@@ -351,7 +350,7 @@ void createLogFileRx()
   }
   else
   {
-    DEBUG_PRINT("Info - Created log file: "); DEBUG_PRINTLN(logFileName);
+    DEBUG_PRINT("Info - Created log file for RX Message: "); DEBUG_PRINTLN(logFileName);
   }
 
   if (!logFile.isOpen())
@@ -363,10 +362,8 @@ void createLogFileRx()
   updateFileCreate(&logFile);
 
   // Write header to file
-  logFile.println("unixtime,node,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext"
-                  "distMaxbotix_av, shortwave1, shortwave2, soilmoist1, soilmoist2, voltage,"
-                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2"
-                  "transmitduration,transmitstatus,iterationCounter");
+  logFile.println("station_number,unixtime,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
+                  "shortwave1, shortwave2, distMaxbotix_av, soilmoist1, soilmoist2, voltage");
 
   // Unused: timer_hmp60,timer_5103l
 
@@ -391,23 +388,21 @@ void logDataRx()
   // Check if microSD is online
   if (online.microSd)
   {
+
     // Check if new log file should be created
     checkLogFile();
-    if (currentLogFile != newLogFile)
-    {
+    
+    // check if a log file for this node exists already 
       createLogFileRx();
       currentLogFile = newLogFile;
       samplesSaved = 0;
-    }
-
     // Write to microSD card
     if (logFile.open(logFileName, O_APPEND | O_WRITE))
     {
       // Sensor information
       samplesSaved++; //  Increment sample count
-      logFile.print(rx_message.node_number);        logFile.print(",");
+      logFile.print(rx_message.station_number);      logFile.print(",");
       logFile.print(rx_message.unixtime);            logFile.print(",");
-      logFile.print(rx_message.voltage);             logFile.print(",");
       logFile.print(rx_message.temperatureInt);      logFile.print(",");
       logFile.print(rx_message.humidityInt);         logFile.print(",");
       logFile.print(rx_message.pressureInt);         logFile.print(",");
@@ -422,9 +417,10 @@ void logDataRx()
       //logFile.print(rx_message.distMaxbotix_nan);    logFile.print(","); 
       logFile.print(rx_message.soilmoist1,2);        logFile.print(",");
       logFile.print(rx_message.soilmoist2,2);        logFile.print(",");
+      logFile.print(rx_message.voltage);             logFile.print(",");
 
       // Debugging information
-      logFile.print(rx_message.transmitStatus);      logFile.print(",");
+      //logFile.print(rx_message.transmitStatus);      logFile.print(",");
 
       // Update file access timestamps
       updateFileAccess(&logFile);

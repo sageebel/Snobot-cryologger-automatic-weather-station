@@ -34,6 +34,7 @@ void printSettings()
   DEBUG_PRINT("retransmitLimit: ");         printTab(1);  DEBUG_PRINTLN(retransmitLimit);
   DEBUG_PRINT("gnssTimeout: ");             printTab(2);  DEBUG_PRINTLN(gnssTimeout);
   DEBUG_PRINT("iridiumTimeout: ");          printTab(1);  DEBUG_PRINTLN(iridiumTimeout);
+  DEBUG_PRINT("loralisten/sendlimit");      printTab(1);  DEBUG_PRINTLN(listen);
   DEBUG_PRINT("loggingMode: ");             printTab(2);  DEBUG_PRINTLN(loggingMode);
   DEBUG_PRINT("batteryCutoff: ");           printTab(2);  DEBUG_PRINTLN(batteryCutoff);
   DEBUG_PRINT("resetFlag: ");               printTab(2);  DEBUG_PRINTLN(resetFlag);
@@ -106,12 +107,38 @@ void printMoSbd()
   printLine();
 
 }
+void printTx()
+{
+  printLine();
+  DEBUG_PRINTLN("tx Message Data");
+  printLine();
+
+  DEBUG_PRINT("stationnumber:");    printTab(2);  DEBUG_PRINTLN(tx_message.station_number);
+  DEBUG_PRINT("unixtime:");         printTab(2);  DEBUG_PRINTLN(tx_message.unixtime);
+  DEBUG_PRINT("temperatureInt:");   printTab(2);  DEBUG_PRINTLN(tx_message.temperatureInt);
+  DEBUG_PRINT("humidityInt:");      printTab(2);  DEBUG_PRINTLN(tx_message.humidityInt);
+  DEBUG_PRINT("pressureInt:");      printTab(2);  DEBUG_PRINTLN(tx_message.pressureInt);
+  DEBUG_PRINT("temperatureExt:");   printTab(2);  DEBUG_PRINTLN(tx_message.temperatureExt);
+  DEBUG_PRINT("humidityExt:");      printTab(2);  DEBUG_PRINTLN(tx_message.humidityExt);
+  DEBUG_PRINT("shortwave1:");       printTab(2);  DEBUG_PRINTLN(tx_message.shortwave1);
+  DEBUG_PRINT("shortwave2:");       printTab(2);  DEBUG_PRINTLN(tx_message.shortwave2);
+  DEBUG_PRINT("maxbotix:");         printTab(2);  DEBUG_PRINTLN(tx_message.distMaxbotix_av);
+  DEBUG_PRINT("voltage:");          printTab(2);  DEBUG_PRINTLN(tx_message.voltage);
+  //DEBUG_PRINT("transmitDuration:"); printTab(1);  DEBUG_PRINTLN(tx_message.transmitDuration);
+  //DEBUG_PRINT("transmitStatus:");   printTab(2);  DEBUG_PRINTLN(tx_message.transmitStatus);
+  //DEBUG_PRINT("iterationCounter:"); printTab(1);  DEBUG_PRINTLN(tx_message.iterationCounter);
+
+  printLine();
+
+}
+
 void printRx()
 {
   printLine();
   DEBUG_PRINTLN("Rx Message Data");
   printLine();
 
+  DEBUG_PRINT("stationnumber:");    printTab(2);  DEBUG_PRINTLN(rx_message.station_number);
   DEBUG_PRINT("unixtime:");         printTab(2);  DEBUG_PRINTLN(rx_message.unixtime);
   DEBUG_PRINT("temperatureInt:");   printTab(2);  DEBUG_PRINTLN(rx_message.temperatureInt);
   DEBUG_PRINT("humidityInt:");      printTab(2);  DEBUG_PRINTLN(rx_message.humidityInt);
@@ -122,9 +149,9 @@ void printRx()
   DEBUG_PRINT("shortwave2:");       printTab(2);  DEBUG_PRINTLN(rx_message.shortwave2);
   DEBUG_PRINT("maxbotix:");         printTab(2);  DEBUG_PRINTLN(rx_message.distMaxbotix_av);
   DEBUG_PRINT("voltage:");          printTab(2);  DEBUG_PRINTLN(rx_message.voltage);
-  DEBUG_PRINT("transmitDuration:"); printTab(1);  DEBUG_PRINTLN(rx_message.transmitDuration);
-  DEBUG_PRINT("transmitStatus:");   printTab(2);  DEBUG_PRINTLN(rx_message.transmitStatus);
-  DEBUG_PRINT("iterationCounter:"); printTab(1);  DEBUG_PRINTLN(rx_message.iterationCounter);
+  //DEBUG_PRINT("transmitDuration:"); printTab(1);  DEBUG_PRINTLN(rx_message.transmitDuration);
+  //DEBUG_PRINT("transmitStatus:");   printTab(2);  DEBUG_PRINTLN(rx_message.transmitStatus);
+  //DEBUG_PRINT("iterationCounter:"); printTab(1);  DEBUG_PRINTLN(rx_message.iterationCounter);
 
   printLine();
 
