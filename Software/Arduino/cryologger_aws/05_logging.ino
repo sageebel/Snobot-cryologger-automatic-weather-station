@@ -329,10 +329,13 @@ void createLogFileRx()
 {
 #if LOGGING
 
+  //extract node ID from the received data 
+  uint8_t station_number = rx_message.station_number;
+
   // Get timestamp log file name
   sprintf(logFileName, "AWS_%02d_20%02d%02d%02d_%02d%02d%02d.csv",
           rx_message.station_number, rtc.getYear(), rtc.getMonth(), rtc.getDay(),
-          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds()); //convert from GMT to PST 
+          rtc.getHours(), rtc.getMinutes(), rtc.getSeconds()); 
 
 
   // Check if log file is open
@@ -376,7 +379,7 @@ void createLogFileRx()
 
 
 //Log Data Recieved from a Node to the Base Station SD Card 
-void logDataRx()
+void logDataRx(uint8_t * rx_message, site_t len)
 {
 #if LOGGING
   // Configure microSD
