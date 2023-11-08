@@ -1,6 +1,8 @@
+#include <Statistic.h>
+
 /*
     Title:                Snobots 
-    Date:                 July 17, 2023
+    Date:                 September 20, 2023
     Author:               Adam Garbo 
     Modifications By:     Sage Ebel 
     Version:              0.1.b
@@ -25,7 +27,7 @@
     Sensors:
     - Apogee SP-212 Pyranometer (x2)
     - Maxbotix MB7354 HRXL-MaxSoar-WRS5 Snow Depth Sensor 
-    // TEROS 10 Soil Moisture Sensor (x2)    
+    - TEROS 10 Soil Moisture Sensor (x2)    
     - Adafruit SHT-30 Humidity and Temperature Sensor --
 
     Comments:
@@ -45,7 +47,7 @@
 #include <Arduino.h>                // Required for new Serial instance. Include before <wiring_private.h>
 #include <ArduinoLowPower.h>        // https://github.com/arduino-libraries/ArduinoLowPower (v1.2.2)
 #include <IridiumSBD.h>             // https://github.com/sparkfun/SparkFun_IridiumSBD_I2C_Arduino_Library (v3.0.6)
-#include <RTCZero.h>                // https://github.com/arduino-libraries/RTCZero (v1.6.0)
+#include <RTCZero.h>                // https://github.com/arduino-libraries/RTCZero (v1.6.0)o
 #include <SdFat.h>                  // https://github.com/greiman/SdFat (v2.2.2)
 #include <sensirion.h>              // https://github.com/HydroSense/sensirion
 #include <Statistic.h>              // https://github.com/RobTillaart/Statistic (v1.0.4)
@@ -60,7 +62,7 @@
 // ----------------------------------------------------------------------------
 // Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[6] = "b2no";          // must be 3 characters 
+char UID[6] = "b2";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -70,15 +72,15 @@ char UID[6] = "b2no";          // must be 3 characters
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-#define NODE_STATION   false    // Set if node is just to transmit messages by LoRa
+#define NODE_STATION   false   // Set if node is just to transmit messages by LoRa
 #define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
 
-unsigned int  node_number         = 4;            // Node number
-unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
+unsigned int  node_number         = 8;            // Node number
+unsigned int  base_station_number = 2;            // Number of snow bot for datagram (100 + node)
 unsigned int  total_nodes         = 5;            // Total nodes in the network (excluding base station) 
 
 #if NODE_STATION
@@ -133,7 +135,7 @@ unsigned int  station_number      = base_station_number;
 // Pin defintiions for the Node station will differ slightly from the Base Station to accomodate the iridium
 //Node Stations: 
 #if NODE_STATION 
-  #define PIN_SOIL_1        A3  // TEROS 10 1 (15 cm)
+  #define PIN_SOIL_1        A3  // TEROS 10 1 (10 cm)
   #define PIN_SOIL_2        A4  // TEROS 10 2 (30cm)
   #define PIN_MB_pw         5   // maxbotix pulse width pin -U2
   #define PIN_RFM95_CS      10  // LoRa "B"
@@ -187,7 +189,7 @@ void SERCOM1_Handler()
 // ----------------------------------------------------------------------------
 Adafruit_BME280                 bme280;
 Adafruit_LSM303_Accel_Unified   lsm303 = Adafruit_LSM303_Accel_Unified(54321); // I2C address: 0x1E
-IridiumSBD                      modem(IRIDIUM_PORT, PIN_IRIDIUM_RX);
+IridiumSBD                      modem(IRIDIUM_PORT);
 RTCZero                         rtc;
 SdFs                            sd;           // File system object
 FsFile                          logFile;      // Log file
@@ -229,8 +231,8 @@ Statistic MaxbotixStats_std;    // Maxbotix std distances
 Statistic MaxbotixStats_max;    // Maxbotix max distances
 Statistic MaxbotixStats_min;    // Maxbotix min distances
 Statistic MaxbotixStats_nan;    // Maxbotix nan samples
-Statistic soilmoist1Stats;      // Soil Moisture (TEROS-10)
-Statistic soilmoist2Stats;      // Soil Moisture (TEROS-10)
+Statistic soil1Stats;           // Soil Moisture (TEROS-10)
+Statistic soil2Stats;           // Soil Moisture (TEROS-10)
 
 
 // ----------------------------------------------------------------------------
@@ -244,11 +246,11 @@ unsigned int  listen              = 90;     //Time in seconds to listen for inco
 unsigned int  listen              = 45;     //Time in seconds to send LoRa messages 
 #endif
 unsigned long sampleInterval      = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
-unsigned int  averageInterval     = 3;      // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 3 for every 15 minutes for testing) 
+unsigned int  averageInterval     = 12;      // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 3 for every 15 minutes for testing) 
 unsigned int  transmitInterval    = 1;      // Number of messages in each Iridium transmission (340-byte limit)
 unsigned int  retransmitLimit     = 4;      // Failed data transmission reattempts (340-byte limit)
 unsigned int  gnssTimeout         = 120;    // Timeout for GNSS signal acquisition (seconds)
-unsigned int  iridiumTimeout      = 2;    // Timeout for Iridium transmission (seconds)(changed to 10 for testing since I know iridium isnt working right now)
+unsigned int  iridiumTimeout      = 180;    // Timeout for Iridium transmission (seconds)(changed to 10 for testing since I know iridium isnt working right now)
 bool          firstTimeFlag       = true;   // Flag to determine if program is running for the first time
 float         batteryCutoff       = 0.0;    // Battery voltage cutoff threshold (V)
 byte          loggingMode         = 1;      // Flag for new log file creation. 1: daily, 2: monthly, 3: yearly
@@ -320,8 +322,10 @@ float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
 float         windGustDirection = 0.0;    // Wind gust direction (°)
 float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
 float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
-float         soilmoist1        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
-float         soilmoist2        = 0.0;    // Soil Moisture 15cm (VWC) ## this needs to be converted from mv using formula in documentation 
+float         soilmoistraw1     = 0.0;    // Raw analog measurements of soil moisture for debugging 
+float         soilmoistraw2     = 0.0;    // Raw analog measurements of soil moisture for debugging 
+float         soilmoist1        = 0.0;    // Soil Moisture 10cm (VWC) ## this needs to be converted from mv using formula in documentation 
+float         soilmoist2        = 0.0;    // Soil Moisture 30cm (VWC) ## this needs to be converted from mv using formula in documentation 
 unsigned int  distMaxbotix_av   = 0;      // Average distance from Maxbotix sensor to surface (mm)
 unsigned int  distMaxbotix_std  = 0;      // Std distance from Maxbotix sensor to surface (mm)
 unsigned int  distMaxbotix_max  = 0;      // Max distance from Maxbotix sensor to surface (mm)
@@ -353,7 +357,7 @@ typedef union
   struct
   {
     uint32_t  unixtime;           // UNIX Epoch time                (4 bytes)
-    int16_t   station_number;        // node number                    (2 bytes)
+    int16_t   station_number;     // node number                    (2 bytes)
     int16_t   temperatureInt;     // Internal temperature (°C)      (2 bytes)   
     uint16_t  humidityInt;        // Internal humidity (%)          (2 bytes)   
     uint16_t  pressureInt;        // Internal pressure (hPa)        (2 bytes)  / 100
@@ -375,8 +379,8 @@ typedef union
     // uint16_t  hdop;               // HDOP                           (2 bytes)
     uint16_t  shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
     uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
-    uint16_t  soilmoist1;         // Soil Moisture 15cm (VWC)       (2 bytes)
-    uint16_t  soilmoist2;         // Soil Moisture 15cm (VWC)       (2 bytes)
+    uint16_t  soilmoist1;         // Soil Moisture 10cm (VWC)       (2 bytes)
+    uint16_t  soilmoist2;         // Soil Moisture 30cm (VWC)       (2 bytes)
     uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
     uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
@@ -463,8 +467,8 @@ void setup()
   //digitalWrite(PIN_12V_EN, LOW);      // Disable 12V power
   digitalWrite(PIN_GNSS_EN, HIGH);    // Disable power to GNSS
   #if BASE_STATION
-    pinMode(PIN_IRIDIUM_SLEEP,OUTPUT);
-    digitalWrite(PIN_IRIDIUM_SLEEP, LOW); // RockBLOCK v3.D and below: Disable power to Iridium
+    //pinMode(PIN_IRIDIUM_SLEEP,OUTPUT);
+    //digitalWrite(PIN_IRIDIUM_SLEEP, LOW); // RockBLOCK v3.D and below: Disable power to Iridium
     //digitalWrite(PIN_IRIDIUM_SLEEP, HIGH);  // RockBLOCK v3.F and above: Set N-FET controlling RockBLOCK On/Off pin to HIGH (no voltage)
   #endif
 
@@ -569,8 +573,8 @@ void setup()
     readsht30();
     readSp212_1();
     readSp212_2();
-    //readsoil1();
-    //readsoil2();
+    readsoil1();
+    readsoil2();
     readMxBtx();
   }
 #endif
@@ -671,8 +675,8 @@ void loop()
       //read7911();       // Read anemometer
       // readHmp60();     // Read temperature/relative humidity sensor
       readMxBtx();      // Read Max Botix 
-      //readsoil1();      //read soil moisture 1 (15cm) 
-      //readsoil2();      //read soil moisture 2 (30cm)
+      readsoil1();      //read soil moisture 1 (10cm) 
+      readsoil2();      //read soil moisture 2 (30cm)
       //read5103L();      // Read anemometer
       // disable12V();     // Disable 12V power
       disable5V();      // Disable 5V power

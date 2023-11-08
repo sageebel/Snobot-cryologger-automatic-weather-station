@@ -662,3 +662,39 @@ void readMxBtx() {
   timer.readMxBtx = millis() - loopStartTime;
 
 }
+// ----------------------------------------------------------------------------
+// Teros 10 Soil Moisture Sensor 
+// 
+  // -----------------------------------------------------
+  // Colour    Pin        Description
+  // -----------------------------------------------------
+  // Orange    A3(1) A4(2)         Positive (signal from sensor)
+  // Brown     5V                  Input Power 3-15 VDC
+  // Clear     GND                 Shield/Ground
+
+// ----------------------------------------------------------------------------
+// Read Soil Moisture Sensors 
+//Read Shallow Sensor (10cm) 
+void readsoil1()
+{
+  (void) analogRead(PIN_SOIL_1);
+  soilmoistraw1 = analogRead(PIN_SOIL_1); // RAW analog voltage across forks of sensor in mV 
+  soilmoist1 = 4.824*pow(10,-10) * (soilmoistraw1) - 2.278*pow(10,-6) * (soilmoistraw1) + 3.898*pow(10,-3) * (soilmoistraw1) - 2.154;
+
+  DEBUG_PRINT("Sensor 1: "); DEBUG_PRINT(soilmoist1); DEBUG_PRINT(F(" m3/m3,")); DEBUG_PRINT(soilmoistraw1); DEBUG_PRINTLN(F(" mV, "));
+ 
+  //Add to statistics Objects 
+ soil1Stats.add(soilmoist1);
+}
+
+void readsoil2()
+{
+  (void) analogRead(PIN_SOIL_2);
+  soilmoistraw2 = analogRead(PIN_SOIL_2); // voltage across forks of sensor in mV 
+  soilmoist2 = 4.824*pow(10,-10) * (soilmoistraw2) - 2.278*pow(10,-6) * (soilmoistraw2) + 3.898*pow(10,-3) * (soilmoistraw2) - 2.154;
+
+  DEBUG_PRINT("Sensor 1: "); DEBUG_PRINT(soilmoist2); DEBUG_PRINT(F(" m3/m3,")); DEBUG_PRINT(soilmoistraw2); DEBUG_PRINTLN(F(" mV, "));
+
+  //Add to statistics Objects 
+ soil2Stats.add(soilmoist2);
+}

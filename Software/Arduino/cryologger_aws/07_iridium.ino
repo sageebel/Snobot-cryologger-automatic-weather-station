@@ -3,7 +3,7 @@ void configureIridium()
 {
   modem.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE); // Assume battery power (USB power: IridiumSBD::USB_POWER_PROFILE)
   modem.adjustSendReceiveTimeout(iridiumTimeout);           // Timeout for Iridium send/receive commands (default = 300 s)
-  modem.adjustStartupTimeout(20);                          // Timeout for Iridium startup (default = 240 s) (changed to 20 since I know iridium isnt working right now)
+  modem.adjustStartupTimeout(40);                          // Timeout for Iridium startup (default = 240 s) (changed to 40 for debugging)
 }
 
 // Write local data from structure to transmit buffer
@@ -175,12 +175,12 @@ void transmitData()
     }
 
     // Put modem to sleep
-    DEBUG_PRINTLN("Info - Putting modem to sleep...");
-    returnCode = modem.sleep();
-    if (returnCode != ISBD_SUCCESS)
-    {
-      DEBUG_PRINT("Warning - Sleep failed error "); DEBUG_PRINTLN(returnCode);
-    }
+    // DEBUG_PRINTLN("Info - Putting modem to sleep...");
+    // returnCode = modem.sleep();
+    // if (returnCode != ISBD_SUCCESS)
+    // {
+    //   DEBUG_PRINT("Warning - Sleep failed error "); DEBUG_PRINTLN(returnCode);
+    // }
 
     // Close the Iridium serial port
     IRIDIUM_PORT.end();
@@ -240,17 +240,17 @@ void ISBDDiagsCallback(IridiumSBD * device, char c)
 
 
 // Required for RockBLOCK v3.F only! Controls inverted logic of on/off pin
-void IridiumSBD::setSleepPin(uint8_t enable)
-{
-   if (enable == HIGH)
-  {
-      digitalWrite(this->sleepPin, LOW);  // LOW = awake. Inverted by N-MOSFET
-      diagprint(F("AWAKE\r\n"));
-   }
-   else
-   {
-      digitalWrite(this->sleepPin, HIGH); // HIGH = asleep. Inverted by N-MOSFET
-      diagprint(F("ASLEEP\r\n"));
-   }
-}
+// void IridiumSBD::setSleepPin(uint8_t enable)
+// {
+//    if (enable == HIGH)
+//   {
+//       digitalWrite(this->sleepPin, LOW);  // LOW = awake. Inverted by N-MOSFET
+//       diagprint(F("AWAKE\r\n"));
+//    }
+//    else
+//    {
+//       digitalWrite(this->sleepPin, HIGH); // HIGH = asleep. Inverted by N-MOSFET
+//       diagprint(F("ASLEEP\r\n"));
+//    }
+// }
 

@@ -379,7 +379,7 @@ void createLogFileRx()
 
 
 //Log Data Recieved from a Node to the Base Station SD Card 
-void logDataRx(uint8_t * rx_message, site_t len)
+void logDataRx()
 {
 #if LOGGING
   // Configure microSD
@@ -395,7 +395,7 @@ void logDataRx(uint8_t * rx_message, site_t len)
     // Check if new log file should be created
     checkLogFile();
     
-    // check if a log file for this node exists already 
+    // always create new log file 
       createLogFileRx();
       currentLogFile = newLogFile;
       samplesSaved = 0;
