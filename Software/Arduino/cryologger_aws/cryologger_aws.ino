@@ -1,8 +1,7 @@
-#include <Statistic.h>
 
 /*
     Title:                Snobots 
-    Date:                 September 20, 2023
+    Date:                 February 1, 2023 
     Author:               Adam Garbo 
     Modifications By:     Sage Ebel 
     Version:              0.1.b
@@ -10,7 +9,7 @@
 
     Description:
     - Code configured for snobots to be deployed in Breitenbush Watershed.
-    - This update adds LoRa 
+    - This update changed the logging files 
 
     Components:
     - Rock7 RockBLOCK 9603
@@ -62,7 +61,7 @@
 // ----------------------------------------------------------------------------
 // Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[6] = "b2";          // must be 3 characters 
+char UID[6] = "n4";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -72,16 +71,16 @@ char UID[6] = "b2";          // must be 3 characters
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
-#define NODE_STATION   false   // Set if node is just to transmit messages by LoRa
-#define BASE_STATION   true   // Set if RockBlock is installed and you wish to listen for LoRa messages
+#define NODE_STATION   true   // Set if node is just to transmit messages by LoRa
+#define BASE_STATION   false   // Set if RockBlock is installed and you wish to listen for LoRa messages
 
 // ----------------------------------------------------------------------------
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
 
-unsigned int  node_number         = 8;            // Node number
-unsigned int  base_station_number = 2;            // Number of snow bot for datagram (100 + node)
-unsigned int  total_nodes         = 5;            // Total nodes in the network (excluding base station) 
+unsigned int  node_number         = 4;            // Node number
+unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
+unsigned int  total_nodes         = 7;            // Total nodes in the network (excluding base station) 
 
 #if NODE_STATION
 char          station_type        = 'n';      // station type identifier 

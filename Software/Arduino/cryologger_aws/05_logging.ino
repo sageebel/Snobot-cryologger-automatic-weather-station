@@ -92,10 +92,10 @@ void createLogFile()
   updateFileCreate(&logFile);
 
   // Write header to file
-  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext"
-                  "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2"
+  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
+                  "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2,"
                   "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
-                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2"
+                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2,"
                   "timer_iridium,transmit_status,rtc_drift,free_ram,"
                   "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
 
@@ -171,10 +171,10 @@ void logData()
       logFile.print(shortwave1,2);        logFile.print(",");
       logFile.print(shortwave2,2);        logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
-      //logFile.print(distMaxbotix_std);    logFile.print(","); 
-      //logFile.print(distMaxbotix_max);    logFile.print(","); 
-      //logFile.print(distMaxbotix_min);    logFile.print(","); 
-      //logFile.print(distMaxbotix_nan);    logFile.print(","); 
+      logFile.print(distMaxbotix_std);    logFile.print(","); 
+      logFile.print(distMaxbotix_max);    logFile.print(","); 
+      logFile.print(distMaxbotix_min);    logFile.print(","); 
+      logFile.print(distMaxbotix_nan);    logFile.print(","); 
       logFile.print(soilmoist1,2);        logFile.print(",");
       logFile.print(soilmoist2,2);        logFile.print(",");
 
