@@ -61,7 +61,7 @@
 // ----------------------------------------------------------------------------
 // Define unique identifier (Change each time refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
-char UID[6] = "n4";          // must be 3 characters 
+char UID[6] = "n6";          // must be 3 characters 
 
 // ----------------------------------------------------------------------------
 // Data logging
@@ -78,7 +78,7 @@ char UID[6] = "n4";          // must be 3 characters
 // User defined global variable declarations (Base vs Node) (These Change with each different station. Refer to : https://docs.google.com/spreadsheets/d/1wqMFbQtYPQnuI8aEQJs2P38mY3F423x5D4DhG7ajBnw/edit#gid=548097118)
 // ----------------------------------------------------------------------------
 
-unsigned int  node_number         = 4;            // Node number
+unsigned int  node_number         = 3;            // Node number
 unsigned int  base_station_number = 1;            // Number of snow bot for datagram (100 + node)
 unsigned int  total_nodes         = 7;            // Total nodes in the network (excluding base station) 
 
@@ -319,8 +319,11 @@ float         windSpeed         = 0.0;    // Wind speed (m/s)
 float         windDirection     = 0.0;    // Wind direction (°)
 float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
 float         windGustDirection = 0.0;    // Wind gust direction (°)
-float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+unsigned int  shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
 float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+float         sensorValue       =0.0;
+float         sensorValue2      =0.0;
+
 float         soilmoistraw1     = 0.0;    // Raw analog measurements of soil moisture for debugging 
 float         soilmoistraw2     = 0.0;    // Raw analog measurements of soil moisture for debugging 
 float         soilmoist1        = 0.0;    // Soil Moisture 10cm (VWC) ## this needs to be converted from mv using formula in documentation 
@@ -378,6 +381,9 @@ typedef union
     // uint16_t  hdop;               // HDOP                           (2 bytes)
     uint16_t  shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
     uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
+    uint16_t  sensorValue;         // In SW Radiation (W/m^2) *100   (2 bytes)
+    uint16_t  sensorValue2;         // In SW Radiation (W/m^2) *100   (2 bytes)
+   // uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
     uint16_t  soilmoist1;         // Soil Moisture 10cm (VWC)       (2 bytes)
     uint16_t  soilmoist2;         // Soil Moisture 30cm (VWC)       (2 bytes)
     uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)

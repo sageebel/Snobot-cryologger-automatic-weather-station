@@ -10,8 +10,8 @@ void calculateStats()
     moSbdMessage.pressureInt     = (pressureIntStats.average() -850) *100 ; // Mean internal pressure (hPa) ** instrument measures in pascals 
     moSbdMessage.temperatureExt  = temperatureExtStats.average()   *100;    // Mean external temperature (°C)
     moSbdMessage.humidityExt     = humidityExtStats.average()  *100;        // Mean external humidity (%)
-    moSbdMessage.shortwave1      = shortwave1Stats.average();               // Mean solar irradiance (W m-2)
-    moSbdMessage.shortwave2      = shortwave2Stats.average();               // Mean solar irradiance (W m-2)
+    moSbdMessage.shortwave1      = shortwave1Stats.average()*100 ;               // Mean solar irradiance (W m-2)
+    moSbdMessage.shortwave2      = shortwave2Stats.average()*100;               // Mean solar irradiance (W m-2)
     moSbdMessage.soilmoist1      = soil1Stats.average();               // 
     moSbdMessage.soilmoist2      = soil2Stats.average();               // 
     moSbdMessage.distMaxbotix_av = MaxbotixStats_av.average();              // distance (mm)

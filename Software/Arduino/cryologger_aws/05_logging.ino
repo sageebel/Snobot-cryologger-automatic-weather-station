@@ -92,12 +92,15 @@ void createLogFile()
   updateFileCreate(&logFile);
 
   // Write header to file
-  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
-                  "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2,"
-                  "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
-                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2,"
-                  "timer_iridium,transmit_status,rtc_drift,free_ram,"
-                  "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
+//  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
+//                  "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2,"
+//                  "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
+//                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2,"
+//                  "timer_iridium,transmit_status,rtc_drift,free_ram,"
+//                  "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
+
+  logFile.println("station_number,unixtime,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
+                  "shortwave1, shortwave2, solarmv, solarmv2, distMaxbotix_av, soilmoist1, soilmoist2, voltage");
 
   // Unused: timer_hmp60,timer_5103l
 
@@ -160,57 +163,58 @@ void logData()
     {
       // Sensor information
       samplesSaved++; //  Increment sample count
-      logFile.print(samplesSaved);        logFile.print(",");
+      logFile.print(station_number);        logFile.print(",");
       logFile.print(dateTime);            logFile.print(",");
-      logFile.print(voltage);             logFile.print(",");
       logFile.print(temperatureInt);      logFile.print(",");
       logFile.print(humidityInt);         logFile.print(",");
       logFile.print(pressureInt);         logFile.print(",");
       logFile.print(temperatureExt);      logFile.print(",");
       logFile.print(humidityExt);         logFile.print(",");
-      logFile.print(shortwave1,2);        logFile.print(",");
-      logFile.print(shortwave2,2);        logFile.print(",");
+      logFile.print(shortwave1);        logFile.print(",");
+      logFile.print(shortwave2);        logFile.print(",");
+       logFile.print(sensorValue);       logFile.print(",");
+      logFile.print(sensorValue2);       logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
-      logFile.print(distMaxbotix_std);    logFile.print(","); 
-      logFile.print(distMaxbotix_max);    logFile.print(","); 
-      logFile.print(distMaxbotix_min);    logFile.print(","); 
-      logFile.print(distMaxbotix_nan);    logFile.print(","); 
-      logFile.print(soilmoist1,2);        logFile.print(",");
-      logFile.print(soilmoist2,2);        logFile.print(",");
-
-
-      // Online information
-      logFile.print(online.microSd);      logFile.print(",");
-      logFile.print(online.bme280);       logFile.print(",");
-      logFile.print(online.lsm303);       logFile.print(",");
-
-      // Timer information
-      logFile.print(timer.readRtc);       logFile.print(",");
-      logFile.print(timer.readBattery);   logFile.print(",");
-      logFile.print(timer.configMicroSd); logFile.print(",");
-      logFile.print(timer.readGnss);      logFile.print(",");
-      logFile.print(timer.readBme280);    logFile.print(",");
-      logFile.print(timer.readLsm303);    logFile.print(",");
-      logFile.print(timer.readsht30);     logFile.print(",");
-      logFile.print(timer.readSp212_1);   logFile.print(",");
-      logFile.print(timer.readSp212_2);   logFile.print(",");
-      logFile.print(timer.readMxBtx);     logFile.print(",");
-      logFile.print(timer.readsoil_1);   logFile.print(",");
-      logFile.print(timer.readsoil_2);   logFile.print(",");
-      logFile.print(timer.iridium);       logFile.print(",");
-
-      // Debugging information
-      logFile.print(transmitStatus);      logFile.print(",");
-      logFile.print(rtcDrift);            logFile.print(",");
-      logFile.print(freeRam());           logFile.print(",");
-
-      // Sampling information
-      logFile.print(sampleInterval);      logFile.print(",");
-      logFile.print(averageInterval);     logFile.print(",");
-      logFile.print(transmitInterval);    logFile.print(",");
-      logFile.print(retransmitLimit);     logFile.print(",");
-      logFile.print(gnssTimeout);         logFile.print(",");
-      logFile.println(iridiumTimeout);
+      //logFile.print(distMaxbotix_std);    logFile.print(","); 
+      //logFile.print(distMaxbotix_max);    logFile.print(","); 
+      //logFile.print(distMaxbotix_min);    logFile.print(","); 
+      //logFile.print(distMaxbotix_nan);    logFile.print(","); 
+      logFile.print(soilmoist1);        logFile.print(",");
+      logFile.print(soilmoist2);        logFile.print(",");
+      logFile.print(voltage);             logFile.print(",");
+//
+//      // Online information
+//      logFile.print(online.microSd);      logFile.print(",");
+//      logFile.print(online.bme280);       logFile.print(",");
+//      logFile.print(online.lsm303);       logFile.print(",");
+//
+//      // Timer information
+//      logFile.print(timer.readRtc);       logFile.print(",");
+//      logFile.print(timer.readBattery);   logFile.print(",");
+//      logFile.print(timer.configMicroSd); logFile.print(",");
+//      logFile.print(timer.readGnss);      logFile.print(",");
+//      logFile.print(timer.readBme280);    logFile.print(",");
+//      logFile.print(timer.readLsm303);    logFile.print(",");
+//      logFile.print(timer.readsht30);     logFile.print(",");
+//      logFile.print(timer.readSp212_1);   logFile.print(",");
+//      logFile.print(timer.readSp212_2);   logFile.print(",");
+//      logFile.print(timer.readMxBtx);     logFile.print(",");
+//      logFile.print(timer.readsoil_1);   logFile.print(",");
+//      logFile.print(timer.readsoil_2);   logFile.print(",");
+//      logFile.print(timer.iridium);       logFile.print(",");
+//
+//      // Debugging information
+//      logFile.print(transmitStatus);      logFile.print(",");
+//      logFile.print(rtcDrift);            logFile.print(",");
+//      logFile.print(freeRam());           logFile.print(",");
+//
+//      // Sampling information
+//      logFile.print(sampleInterval);      logFile.print(",");
+//      logFile.print(averageInterval);     logFile.print(",");
+//      logFile.print(transmitInterval);    logFile.print(",");
+//      logFile.print(retransmitLimit);     logFile.print(",");
+//      logFile.print(gnssTimeout);         logFile.print(",");
+//      logFile.println(iridiumTimeout);
 
       // Update file access timestamps
       updateFileAccess(&logFile);
@@ -234,68 +238,70 @@ void logData()
       DEBUG_PRINTLN(F("Logged Local Data"));
       printLine();
       DEBUG_PRINT("Info - Logging local data to: "); DEBUG_PRINTLN(logFileName);
-      DEBUG_PRINT(samplesSaved);        DEBUG_PRINT(",");
+      DEBUG_PRINT(station_number);        DEBUG_PRINT(",");
       DEBUG_PRINT(dateTime);            DEBUG_PRINT(",");
-      DEBUG_PRINT(voltage);             DEBUG_PRINT(",");
       DEBUG_PRINT(temperatureInt);      DEBUG_PRINT(",");
       DEBUG_PRINT(humidityInt);         DEBUG_PRINT(",");
       DEBUG_PRINT(pressureInt);         DEBUG_PRINT(",");
       DEBUG_PRINT(temperatureExt);      DEBUG_PRINT(",");
       DEBUG_PRINT(humidityExt);         DEBUG_PRINT(",");
-      DEBUG_PRINT(pitch);               DEBUG_PRINT(",");
-      DEBUG_PRINT(roll);                DEBUG_PRINT(",");  
+      //DEBUG_PRINT(pitch);               DEBUG_PRINT(",");
+      //DEBUG_PRINT(roll);                DEBUG_PRINT(",");  
       DEBUG_PRINT(shortwave1);          DEBUG_PRINT(",");
-      DEBUG_PRINT(shortwave2);          DEBUG_PRINT(",");    
+      DEBUG_PRINT(shortwave2);          DEBUG_PRINT(","); 
+      DEBUG_PRINT(sensorValue);          DEBUG_PRINT(",");
+      DEBUG_PRINT(sensorValue2);          DEBUG_PRINT(",");  
       DEBUG_PRINT(distMaxbotix_av);     DEBUG_PRINT(",");  
-      //DEBUG_PRINT(distMaxbotix_std);    DEBUG_PRINT(",");  
-      //DEBUG_PRINT(distMaxbotix_max);    DEBUG_PRINT(","); 
-      //DEBUG_PRINT(distMaxbotix_min);    DEBUG_PRINT(",");  
-     // DEBUG_PRINT(distMaxbotix_nan);    DEBUG_PRINT(","); 
+//      DEBUG_PRINT(distMaxbotix_std);    DEBUG_PRINT(",");  
+//      DEBUG_PRINT(distMaxbotix_max);    DEBUG_PRINT(","); 
+//      DEBUG_PRINT(distMaxbotix_min);    DEBUG_PRINT(",");  
+//      DEBUG_PRINT(distMaxbotix_nan);    DEBUG_PRINT(","); 
       DEBUG_PRINT(soilmoist1);        DEBUG_PRINT(",");
       DEBUG_PRINT(soilmoist2);        DEBUG_PRINT(",");
+      DEBUG_PRINT(voltage);             DEBUG_PRINT(",");
       // DEBUG_PRINT(windSpeed);           DEBUG_PRINT(",");
       // DEBUG_PRINT(windDirection);       DEBUG_PRINT(",");
       //DEBUG_PRINT(solar);               DEBUG_PRINT(",");
-      DEBUG_PRINT_DEC(latitude, 6);     DEBUG_PRINT(",");
-      DEBUG_PRINT_DEC(longitude, 6);    DEBUG_PRINT(",");
-      DEBUG_PRINT(satellites);          DEBUG_PRINT(",");
-      DEBUG_PRINT(hdop);                DEBUG_PRINT(",");
+//      DEBUG_PRINT_DEC(latitude, 6);     DEBUG_PRINT(",");
+//      DEBUG_PRINT_DEC(longitude, 6);    DEBUG_PRINT(",");
+//      DEBUG_PRINT(satellites);          DEBUG_PRINT(",");
+//      DEBUG_PRINT(hdop);                DEBUG_PRINT(",");
 
       // Online information
-      DEBUG_PRINT(online.microSd);      DEBUG_PRINT(",");
-      DEBUG_PRINT(online.bme280);       DEBUG_PRINT(",");
-      DEBUG_PRINT(online.lsm303);       DEBUG_PRINT(",");
-
-      // Timer information
-      DEBUG_PRINT(timer.readRtc);       DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readBattery);   DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.configMicroSd); DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readGnss);      DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readBme280);    DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readLsm303);    DEBUG_PRINT(",");
-      // DEBUG_PRINT(timer.readHmp60);  DEBUG_PRINT(",");
-      // DEBUG_PRINT(timer.read5103L);  DEBUG_PRINT(",");
-       DEBUG_PRINT(timer.readsht30);    DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readSp212_1);   DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readSp212_2);   DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readMxBtx);     DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readsoil_1);    DEBUG_PRINT(",");
-      DEBUG_PRINT(timer.readsoil_2);    DEBUG_PRINT(",");
-
-      // DEBUG_PRINT(timer.iridium);    DEBUG_PRINT(",");
-
-      // Debugging information
-      DEBUG_PRINT(transmitStatus);      DEBUG_PRINT(",");
-      DEBUG_PRINT(rtcDrift);            DEBUG_PRINT(",");
-      DEBUG_PRINT(freeRam());           DEBUG_PRINT(",");
-
-      // Sampling information
-      DEBUG_PRINT(sampleInterval);      DEBUG_PRINT(",");
-      DEBUG_PRINT(averageInterval);     DEBUG_PRINT(",");
-      DEBUG_PRINT(transmitInterval);    DEBUG_PRINT(",");
-      DEBUG_PRINT(retransmitLimit);     DEBUG_PRINT(",");
-      DEBUG_PRINT(gnssTimeout);         DEBUG_PRINT(",");
-      DEBUG_PRINTLN(iridiumTimeout);
+//      DEBUG_PRINT(online.microSd);      DEBUG_PRINT(",");
+//      DEBUG_PRINT(online.bme280);       DEBUG_PRINT(",");
+//      DEBUG_PRINT(online.lsm303);       DEBUG_PRINT(",");
+//
+//      // Timer information
+//      DEBUG_PRINT(timer.readRtc);       DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readBattery);   DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.configMicroSd); DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readGnss);      DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readBme280);    DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readLsm303);    DEBUG_PRINT(",");
+//      // DEBUG_PRINT(timer.readHmp60);  DEBUG_PRINT(",");
+//      // DEBUG_PRINT(timer.read5103L);  DEBUG_PRINT(",");
+//       DEBUG_PRINT(timer.readsht30);    DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readSp212_1);   DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readSp212_2);   DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readMxBtx);     DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readsoil_1);    DEBUG_PRINT(",");
+//      DEBUG_PRINT(timer.readsoil_2);    DEBUG_PRINT(",");
+//
+//      // DEBUG_PRINT(timer.iridium);    DEBUG_PRINT(",");
+//
+//      // Debugging information
+//      DEBUG_PRINT(transmitStatus);      DEBUG_PRINT(",");
+//      DEBUG_PRINT(rtcDrift);            DEBUG_PRINT(",");
+//      DEBUG_PRINT(freeRam());           DEBUG_PRINT(",");
+//
+//      // Sampling information
+//      DEBUG_PRINT(sampleInterval);      DEBUG_PRINT(",");
+//      DEBUG_PRINT(averageInterval);     DEBUG_PRINT(",");
+//      DEBUG_PRINT(transmitInterval);    DEBUG_PRINT(",");
+//      DEBUG_PRINT(retransmitLimit);     DEBUG_PRINT(",");
+//      DEBUG_PRINT(gnssTimeout);         DEBUG_PRINT(",");
+//      DEBUG_PRINTLN(iridiumTimeout);
 #endif
       blinkLed(PIN_LED_GREEN, 2, 100);
     }
