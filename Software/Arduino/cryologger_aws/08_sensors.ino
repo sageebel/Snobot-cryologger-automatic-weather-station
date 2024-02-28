@@ -262,7 +262,7 @@ void readSp212_1()
   DEBUG_PRINT("Info - Reading SP212_1...");
 
   // Perform analog readings
-  // (void)analogRead(PIN_SP212_1);
+  (void)analogRead(PIN_SP212_1);
   float sensorValue = analogRead(PIN_SP212_1); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
@@ -294,12 +294,11 @@ void readSp212_2()
   DEBUG_PRINT("Info - Reading SP212_2...");
 
   // Perform analog readings
-  //(void)analogRead(PIN_SP212_2);
-
+  (void)analogRead(PIN_SP212_2);
   float sensorValue2 = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  float shortwave2 = mapFloat(sensorValue2, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this inst working need to troubleshoot 
+  float shortwave2 = mapFloat(sensorValue2, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 
 
   // Calculate measured voltages
  // float shortwave2 = sensorValue2 * (0.8);

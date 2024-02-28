@@ -319,10 +319,10 @@ float         windSpeed         = 0.0;    // Wind speed (m/s)
 float         windDirection     = 0.0;    // Wind direction (°)
 float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
 float         windGustDirection = 0.0;    // Wind gust direction (°)
-unsigned int  shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
+float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
 float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
-float         sensorValue       =0.0;
-float         sensorValue2      =0.0;
+unsigned int  sensorValue       =0;
+unsigned int  sensorValue2      =0;
 
 float         soilmoistraw1     = 0.0;    // Raw analog measurements of soil moisture for debugging 
 float         soilmoistraw2     = 0.0;    // Raw analog measurements of soil moisture for debugging 
@@ -379,8 +379,8 @@ typedef union
     // int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     // uint8_t   satellites;         // # of satellites                (1 byte)
     // uint16_t  hdop;               // HDOP                           (2 bytes)
-    uint16_t  shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
-    uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
+    float  shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
+    float  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
     uint16_t  sensorValue;         // In SW Radiation (W/m^2) *100   (2 bytes)
     uint16_t  sensorValue2;         // In SW Radiation (W/m^2) *100   (2 bytes)
    // uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)

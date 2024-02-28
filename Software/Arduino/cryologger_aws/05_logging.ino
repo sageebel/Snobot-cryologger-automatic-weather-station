@@ -170,8 +170,8 @@ void logData()
       logFile.print(pressureInt);         logFile.print(",");
       logFile.print(temperatureExt);      logFile.print(",");
       logFile.print(humidityExt);         logFile.print(",");
-      logFile.print(shortwave1);        logFile.print(",");
-      logFile.print(shortwave2);        logFile.print(",");
+      logFile.print(shortwave1,2);        logFile.print(",");
+      logFile.print(shortwave2,2);        logFile.print(",");
        logFile.print(sensorValue);       logFile.print(",");
       logFile.print(sensorValue2);       logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
@@ -182,7 +182,10 @@ void logData()
       logFile.print(soilmoist1);        logFile.print(",");
       logFile.print(soilmoist2);        logFile.print(",");
       logFile.print(voltage);             logFile.print(",");
-//
+
+
+//comment out additional data for debugging SP212 sensors 
+
 //      // Online information
 //      logFile.print(online.microSd);      logFile.print(",");
 //      logFile.print(online.bme280);       logFile.print(",");
