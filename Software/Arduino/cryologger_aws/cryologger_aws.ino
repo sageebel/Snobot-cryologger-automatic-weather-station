@@ -319,10 +319,10 @@ float         windSpeed         = 0.0;    // Wind speed (m/s)
 float         windDirection     = 0.0;    // Wind direction (°)
 float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
 float         windGustDirection = 0.0;    // Wind gust direction (°)
-float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
-float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) ## this needs to be converted from mv using formula in documentation 
-unsigned int  sensorValue       =0;
-unsigned int  sensorValue2      =0;
+float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) 
+float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) 
+unsigned int  sensorValue       =0;       // Raw sensor value in MV for debugging 
+unsigned int  sensorValue2      =0;       // Raw sensor value in MV for debugging 
 
 float         soilmoistraw1     = 0.0;    // Raw analog measurements of soil moisture for debugging 
 float         soilmoistraw2     = 0.0;    // Raw analog measurements of soil moisture for debugging 
@@ -371,6 +371,7 @@ typedef union
     // uint16_t  windDirection;      // Mean wind direction (°)        (2 bytes)
     // uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
     // uint16_t  windGustDirection;  // Wind gust direction (°)        (2 bytes)
+    uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
    // uint16_t  distMaxbotix_std;   // Std dist sensor to surface (mm)(2 bytes)
     //uint16_t  distMaxbotix_max;   // Max dist sensor to surface (mm)(2 bytes)
     //uint16_t  distMaxbotix_min;   // Min dist sensor to surface (mm)(2 bytes)
@@ -386,7 +387,7 @@ typedef union
    // uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
     uint16_t  soilmoist1;         // Soil Moisture 10cm (VWC)       (2 bytes)
     uint16_t  soilmoist2;         // Soil Moisture 30cm (VWC)       (2 bytes)
-    uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
+
     uint16_t  voltage;            // Battery voltage (V)            (2 bytes)   
     uint16_t  transmitDuration;   // Previous transmission duration (2 bytes)
     uint8_t   transmitStatus;     // Iridium return code            (1 byte)
@@ -678,12 +679,12 @@ void loop()
       readsht30();      // Read temperature/relative humidity sensor
       //readSht31();      // Read temperature/relative humidity sensor
       //read7911();       // Read anemometer
-      // readHmp60();     // Read temperature/relative humidity sensor
+      //readHmp60();     // Read temperature/relative humidity sensor
       readMxBtx();      // Read Max Botix 
       readsoil1();      //read soil moisture 1 (10cm) 
       readsoil2();      //read soil moisture 2 (30cm)
       //read5103L();      // Read anemometer
-      // disable12V();     // Disable 12V power
+      //disable12V();     // Disable 12V power
       disable5V();      // Disable 5V power
 
       // Print summary of statistics
