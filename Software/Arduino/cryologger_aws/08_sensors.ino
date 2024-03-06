@@ -267,7 +267,7 @@ void readSp212_1()
 
   // Map voltages to sensor ranges
 
-  float shortwave1 = mapFloat(sensorValue, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 //this is not working in testing need to troubleshoot 
+  shortwave1 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-2.5 V to 0 to 1000 W m^2 //this is not working in testing need to troubleshoot 
 
   // Calculate measured voltages
   //float shortwave1 = sensorValue * (0.8); // multiply by 0.8 to get W/m^2 per documentation for this sensor 
@@ -280,7 +280,6 @@ void readSp212_1()
 
   // Add to statistics object
   shortwave1Stats.add(shortwave1);
-  shortwave1Stats.add(sensorValue);
 
   // Stop loop timer
   timer.readSp212_1 = millis() - loopStartTime;
@@ -295,14 +294,14 @@ void readSp212_2()
 
   // Perform analog readings
   (void)analogRead(PIN_SP212_2);
-  float sensorValue2 = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
+  float sensorValue = analogRead(PIN_SP212_2); // Incoming Soar Radiation 
 
   // Map voltages to sensor ranges
-  float shortwave2 = mapFloat(sensorValue2, 0, 1250, 0, 1000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 
+  shortwave2 = mapFloat(sensorValue, 0, 3102, 0, 2000); // Map solar irradiance from 0-1250 mV to 0 to 1000 W m^2 
 
   // Calculate measured voltages
  // float shortwave2 = sensorValue2 * (0.8);
-   float voltage = sensorValue2 * (3.3 / 4095.0);
+   float voltage = sensorValue * (3.3 / 4095.0);
 
   DEBUG_PRINTLN("done.");
 
@@ -311,7 +310,6 @@ void readSp212_2()
 
   // Add to statistics object
   shortwave2Stats.add(shortwave2);
-  shortwave1Stats.add(sensorValue2);
 
   // Stop loop timer
   timer.readSp212_2 = millis() - loopStartTime;

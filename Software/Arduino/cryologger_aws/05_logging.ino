@@ -92,15 +92,15 @@ void createLogFile()
   updateFileCreate(&logFile);
 
   // Write header to file
-//  logFile.println("sample,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
-//                  "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2,"
-//                  "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
-//                  "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2,"
-//                  "timer_iridium,transmit_status,rtc_drift,free_ram,"
-//                  "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
+ logFile.println("station_num,datetime,voltage,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
+                    "shortwave1, shortwave2, distMaxbotix_av, distMaxbotix_std, distMaxbotix_max,  distMaxbotix_min, distMaxbotix_nan, soilmoist1, soilmoist2,"
+                     "online_microSd,online_Bme280,online_Lsm303,timer_readRtc,timer_readBattery,timer_configMicroSd,"
+                     "timer_readGnss,timer_bme280,timer_lsm303,timer_readsht30,timer_readSP212_1, timer_readSP212_2, timer_readMxBtx, timer_readsoil_1, timer_readsoil_2,"
+                     "timer_iridium,transmit_status,rtc_drift,free_ram,"
+                     "sampleInterval,averageInterval,transmitInterval,retransmitLimit,gnssTimeout,iridiumTimeout");
 
-  logFile.println("station_number,unixtime,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
-                  "shortwave1, shortwave2, solarmv, solarmv2, distMaxbotix_av, soilmoist1, soilmoist2, voltage");
+  //logFile.println("station_number,unixtime,temperature_int,humidity_int,pressure_int,temperature_ext, humidity_ext,"
+  //                 "shortwave1, shortwave2, distMaxbotix_av, soilmoist1, soilmoist2, voltage");
 
   // Unused: timer_hmp60,timer_5103l
 
@@ -165,6 +165,7 @@ void logData()
       samplesSaved++; //  Increment sample count
       logFile.print(station_number);        logFile.print(",");
       logFile.print(dateTime);            logFile.print(",");
+       logFile.print(voltage);             logFile.print(",");
       logFile.print(temperatureInt);      logFile.print(",");
       logFile.print(humidityInt);         logFile.print(",");
       logFile.print(pressureInt);         logFile.print(",");
@@ -172,52 +173,49 @@ void logData()
       logFile.print(humidityExt);         logFile.print(",");
       logFile.print(shortwave1,2);        logFile.print(",");
       logFile.print(shortwave2,2);        logFile.print(",");
-       logFile.print(sensorValue);       logFile.print(",");
-      logFile.print(sensorValue2);       logFile.print(",");
       logFile.print(distMaxbotix_av);     logFile.print(",");   
-      //logFile.print(distMaxbotix_std);    logFile.print(","); 
-      //logFile.print(distMaxbotix_max);    logFile.print(","); 
-      //logFile.print(distMaxbotix_min);    logFile.print(","); 
-      //logFile.print(distMaxbotix_nan);    logFile.print(","); 
+      logFile.print(distMaxbotix_std);    logFile.print(","); 
+      logFile.print(distMaxbotix_max);    logFile.print(","); 
+      logFile.print(distMaxbotix_min);    logFile.print(","); 
+      logFile.print(distMaxbotix_nan);    logFile.print(","); 
       logFile.print(soilmoist1);        logFile.print(",");
       logFile.print(soilmoist2);        logFile.print(",");
-      logFile.print(voltage);             logFile.print(",");
-
+     
 
 //comment out additional data for debugging SP212 sensors 
 
 //      // Online information
-//      logFile.print(online.microSd);      logFile.print(",");
-//      logFile.print(online.bme280);       logFile.print(",");
-//      logFile.print(online.lsm303);       logFile.print(",");
+      logFile.print(online.microSd);      logFile.print(",");
+      logFile.print(online.bme280);       logFile.print(",");
+      logFile.print(online.lsm303);       logFile.print(",");
 //
 //      // Timer information
-//      logFile.print(timer.readRtc);       logFile.print(",");
-//      logFile.print(timer.readBattery);   logFile.print(",");
-//      logFile.print(timer.configMicroSd); logFile.print(",");
-//      logFile.print(timer.readGnss);      logFile.print(",");
-//      logFile.print(timer.readBme280);    logFile.print(",");
-//      logFile.print(timer.readLsm303);    logFile.print(",");
-//      logFile.print(timer.readsht30);     logFile.print(",");
-//      logFile.print(timer.readSp212_1);   logFile.print(",");
-//      logFile.print(timer.readSp212_2);   logFile.print(",");
-//      logFile.print(timer.readMxBtx);     logFile.print(",");
-//      logFile.print(timer.readsoil_1);   logFile.print(",");
-//      logFile.print(timer.readsoil_2);   logFile.print(",");
-//      logFile.print(timer.iridium);       logFile.print(",");
+      logFile.print(timer.readRtc);       logFile.print(",");
+      logFile.print(timer.readBattery);   logFile.print(",");
+      logFile.print(timer.configMicroSd); logFile.print(",");
+      logFile.print(timer.readGnss);      logFile.print(",");
+      logFile.print(timer.readBme280);    logFile.print(",");
+      logFile.print(timer.readLsm303);    logFile.print(",");
+      logFile.print(timer.readsht30);     logFile.print(",");
+      logFile.print(timer.readSp212_1);   logFile.print(",");
+      logFile.print(timer.readSp212_2);   logFile.print(",");
+      logFile.print(timer.readMxBtx);     logFile.print(",");
+      logFile.print(timer.readsoil_1);   logFile.print(",");
+      logFile.print(timer.readsoil_2);   logFile.print(",");
+      logFile.print(timer.iridium);       logFile.print(",");
 //
 //      // Debugging information
-//      logFile.print(transmitStatus);      logFile.print(",");
-//      logFile.print(rtcDrift);            logFile.print(",");
-//      logFile.print(freeRam());           logFile.print(",");
+      logFile.print(transmitStatus);      logFile.print(",");
+      logFile.print(rtcDrift);            logFile.print(",");
+      logFile.print(freeRam());           logFile.print(",");
 //
 //      // Sampling information
-//      logFile.print(sampleInterval);      logFile.print(",");
-//      logFile.print(averageInterval);     logFile.print(",");
-//      logFile.print(transmitInterval);    logFile.print(",");
-//      logFile.print(retransmitLimit);     logFile.print(",");
-//      logFile.print(gnssTimeout);         logFile.print(",");
-//      logFile.println(iridiumTimeout);
+      logFile.print(sampleInterval);      logFile.print(",");
+      logFile.print(averageInterval);     logFile.print(",");
+      logFile.print(transmitInterval);    logFile.print(",");
+      logFile.print(retransmitLimit);     logFile.print(",");
+      logFile.print(gnssTimeout);         logFile.print(",");
+      logFile.println(iridiumTimeout);
 
       // Update file access timestamps
       updateFileAccess(&logFile);

@@ -239,10 +239,10 @@ Statistic soil2Stats;           // Soil Moisture (TEROS-10)
 // ----------------------------------------------------------------------------
 
 #if BASE_STATION        
-unsigned int  listen              = 90;     //Time in seconds to listen for incoming LoRa messages 
+unsigned int  listen              = 1;     //Time in seconds to listen for incoming LoRa messages- adjusted because Lora is not working currently (3/5/2023) 
 #endif
 #if NODE_STATION
-unsigned int  listen              = 45;     //Time in seconds to send LoRa messages 
+unsigned int  listen              = 1;     //Time in seconds to send LoRa messages  adjusted because Lora is not working currently (3/5/2023) 
 #endif
 unsigned long sampleInterval      = 5;      // Sampling interval (minutes). Default: 5 min (300 seconds) (change to 30 seconds for debugging)
 unsigned int  averageInterval     = 12;      // Number of samples to be averaged in each message. Default: 12 (hourly) (changed to 3 for every 15 minutes for testing) 
@@ -320,9 +320,7 @@ float         windDirection     = 0.0;    // Wind direction (°)
 float         windGustSpeed     = 0.0;    // Wind gust speed  (m/s)
 float         windGustDirection = 0.0;    // Wind gust direction (°)
 float         shortwave1        = 0.0;    // Incoming Short Wave Radiation (W/m^) 
-float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^) 
-unsigned int  sensorValue       =0;       // Raw sensor value in MV for debugging 
-unsigned int  sensorValue2      =0;       // Raw sensor value in MV for debugging 
+float         shortwave2        = 0.0;    // Incoming Short Wave Radiation (W/m^)  
 
 float         soilmoistraw1     = 0.0;    // Raw analog measurements of soil moisture for debugging 
 float         soilmoistraw2     = 0.0;    // Raw analog measurements of soil moisture for debugging 
@@ -372,19 +370,16 @@ typedef union
     // uint16_t  windGustSpeed;      // Wind gust speed (m/s)          (2 bytes)   * 100
     // uint16_t  windGustDirection;  // Wind gust direction (°)        (2 bytes)
     uint16_t  distMaxbotix_av;    // Av dist sensor to surface (mm) (2 bytes)
-   // uint16_t  distMaxbotix_std;   // Std dist sensor to surface (mm)(2 bytes)
-    //uint16_t  distMaxbotix_max;   // Max dist sensor to surface (mm)(2 bytes)
-    //uint16_t  distMaxbotix_min;   // Min dist sensor to surface (mm)(2 bytes)
-    //uint16_t  distMaxbotix_nan;   // # ofNaN readings in Maxbotix   (2 bytes)
+    uint16_t  distMaxbotix_std;   // Std dist sensor to surface (mm)(2 bytes)
+    uint16_t  distMaxbotix_max;   // Max dist sensor to surface (mm)(2 bytes)
+    uint16_t  distMaxbotix_min;   // Min dist sensor to surface (mm)(2 bytes)
+    uint16_t  distMaxbotix_nan;   // # ofNaN readings in Maxbotix   (2 bytes)
     // int32_t   latitude;           // Latitude (DD)                  (4 bytes)   * 1000000
     // int32_t   longitude;          // Longitude (DD)                 (4 bytes)   * 1000000
     // uint8_t   satellites;         // # of satellites                (1 byte)
     // uint16_t  hdop;               // HDOP                           (2 bytes)
     float  shortwave1;         // In SW Radiation (W/m^2) *100   (2 bytes)
     float  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
-    uint16_t  sensorValue;         // In SW Radiation (W/m^2) *100   (2 bytes)
-    uint16_t  sensorValue2;         // In SW Radiation (W/m^2) *100   (2 bytes)
-   // uint16_t  shortwave2;         // Out SW Radiation (W/m^2)*100   (2 bytes)
     uint16_t  soilmoist1;         // Soil Moisture 10cm (VWC)       (2 bytes)
     uint16_t  soilmoist2;         // Soil Moisture 30cm (VWC)       (2 bytes)
 
