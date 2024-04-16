@@ -566,10 +566,10 @@ DEBUG_PRINTLN("Done.");
 // Colour    Pin    Description             Notes
 // --------------------------------------------------
 // White                Temperature Sensor      Not connected
-// Orange   5(node)     Pulse Width Output      Pulse width in 
+// Orange   5(node)U2     Pulse Width Output      Pulse width in 
   //Orange  A3(base)    Pulse Width Output      Confirm that we can use this analog port with PWO
 // Brown                Analog Voltage Output   Analog In (not connected)
-// Green    9(node)     Ranging Start/Stop      Sleep
+// Green    9(node)U3     Ranging Start/Stop      Sleep
   //Green      (base)                           Not Connected 
 // Blue                 Serial Output           Not connected
 // Red      5V          Vcc                     5V

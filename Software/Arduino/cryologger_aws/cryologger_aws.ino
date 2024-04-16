@@ -1,4 +1,4 @@
-
+st
 /*
     Title:                Snobots 
     Date:                 February 1, 2023 
@@ -21,7 +21,7 @@
     - Adafruit LSM303AGR Accelerometer/Magnetomter --
     - Pololu 3.3V 600mA Step-Down Voltage Regulator D36V6F3
     - Pololu 5V 600mA Step-Down Voltage Regulator D36V6F5
-    - SanDisk Max Endurance 32 GB microSD card
+    - SanDisk Max Endurance 32 GB microSD card *test notes
 
     Sensors:
     - Apogee SP-212 Pyranometer (x2)
